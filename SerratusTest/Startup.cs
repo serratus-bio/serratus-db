@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SerratusTest.ORM;
+using SerratusTest.Services;
 
 namespace SerratusTest
 {
@@ -26,6 +28,8 @@ namespace SerratusTest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<SerratusSummaryContext>();
+            services.AddScoped<ISerratusSummaryService, SerratusSummaryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
