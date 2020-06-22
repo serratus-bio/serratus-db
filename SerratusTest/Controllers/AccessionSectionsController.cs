@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
+using SerratusTest.Services;
 
 namespace SerratusTest.Controllers
 {
@@ -15,12 +16,18 @@ namespace SerratusTest.Controllers
     public class AccessionSectionsController : ControllerBase
     {
         private readonly SerratusSummaryContext _context;
+        private readonly ISerratusSummaryService _serratusSummaryService;
 
-        public AccessionSectionsController(SerratusSummaryContext context)
+        public AccessionSectionsController(SerratusSummaryContext context, ISerratusSummaryService serratusSummaryService)
         {
             _context = context;
+            _serratusSummaryService = serratusSummaryService;
         }
-
+        [HttpPost("create-accession-entry")]
+        public void CreateEntry()
+        {
+            _serratusSummaryService.AddAccessionSection();
+        }
         // GET: api/AccessionSections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AccessionSection>>> GetAccessionSections()
