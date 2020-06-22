@@ -9,7 +9,7 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200622174938_SerratusTest")]
+    [Migration("20200622205153_SerratusTest")]
     partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,11 +42,11 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Cvg")
                         .HasColumnType("text");
 
-                    b.Property<string>("CvgPct")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Depth")
+                    b.Property<int>("CvgPct")
                         .HasColumnType("integer");
+
+                    b.Property<double>("Depth")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Fam")
                         .HasColumnType("text");
@@ -63,8 +63,8 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("PctId")
-                        .HasColumnType("integer");
+                    b.Property<double>("PctId")
+                        .HasColumnType("double precision");
 
                     b.HasKey("AccessionSectionId");
 

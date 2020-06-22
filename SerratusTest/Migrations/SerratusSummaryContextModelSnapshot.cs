@@ -40,11 +40,11 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Cvg")
                         .HasColumnType("text");
 
-                    b.Property<string>("CvgPct")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Depth")
+                    b.Property<int>("CvgPct")
                         .HasColumnType("integer");
+
+                    b.Property<double>("Depth")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Fam")
                         .HasColumnType("text");
@@ -61,8 +61,8 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("PctId")
-                        .HasColumnType("integer");
+                    b.Property<double>("PctId")
+                        .HasColumnType("double precision");
 
                     b.HasKey("AccessionSectionId");
 

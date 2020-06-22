@@ -19,7 +19,7 @@ namespace SerratusTest.Services
         {
             _serratusSummaryContext.CommentLines.Add(new CommentLine
             {
-                CommentLineId = 2,
+                CommentLineId = 1,
                 Sra = "ERR2756788",
                 Genome = "cov3ma",
                 Date = "200607 - 01:47"
