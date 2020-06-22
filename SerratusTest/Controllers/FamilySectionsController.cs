@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
+using SerratusTest.Services;
 
 namespace SerratusTest.Controllers
 {
@@ -15,12 +16,18 @@ namespace SerratusTest.Controllers
     public class FamilySectionsController : ControllerBase
     {
         private readonly SerratusSummaryContext _context;
+        private readonly ISerratusSummaryService _serratusSummaryService;
 
-        public FamilySectionsController(SerratusSummaryContext context)
+        public FamilySectionsController(SerratusSummaryContext context, ISerratusSummaryService serratusSummaryService)
         {
             _context = context;
+            _serratusSummaryService = serratusSummaryService;
         }
-
+        [HttpPost("create-family-section")]
+        public void CreateEntry()
+        {
+            _serratusSummaryService.AddFamilySection();
+        }
         // GET: api/FamilySections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FamilySection>>> GetFamilySections()
