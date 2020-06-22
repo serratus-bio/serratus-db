@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
+using SerratusTest.Services;
 
 namespace SerratusTest.Controllers
 {
@@ -15,12 +16,19 @@ namespace SerratusTest.Controllers
     public class CommentLinesController : ControllerBase
     {
         private readonly SerratusSummaryContext _context;
+        private readonly ISerratusSummaryService _serratusSummaryService;
 
-        public CommentLinesController(SerratusSummaryContext context)
+        public CommentLinesController(SerratusSummaryContext context, ISerratusSummaryService serratusSummaryService)
         {
             _context = context;
+            _serratusSummaryService = serratusSummaryService;
         }
 
+        [HttpPost("create-summary")]
+        public void CreateEntry()
+        {
+            _serratusSummaryService.AddCommentLine();
+        }
         // GET: api/CommentLines
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentLine>>> GetCommentLines()
