@@ -2,6 +2,8 @@
 {
     public interface ISerratusSummaryService
     {
-        void AddEntry();
+        void AddCommentLine();
+        void AddFamilySection();
+        void AddAccessionSection();
     }
 }
