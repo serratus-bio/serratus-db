@@ -12,6 +12,7 @@ namespace SerratusTest.ORM
         public DbSet<CommentLine> CommentLines { get; set; }
         public DbSet<FamilySection> FamilySections{ get; set; }
         public DbSet<AccessionSection> AccessionSections { get; set; }
+        public DbSet<FastaSection> FastaSections { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql("host=localhost;database=SerratusTest;username=postgres;password=bandit");
     }

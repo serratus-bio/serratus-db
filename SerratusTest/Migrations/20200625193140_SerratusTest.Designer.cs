@@ -9,7 +9,7 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200622205153_SerratusTest")]
+    [Migration("20200625193140_SerratusTest")]
     partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,6 +150,32 @@ namespace SerratusTest.Migrations
                     b.ToTable("FamilySections");
                 });
 
+            modelBuilder.Entity("SerratusTest.Domain.Model.FastaSection", b =>
+                {
+                    b.Property<int>("FastaSectionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("CommentLineId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FastaSectionLineId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Sequence")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SequenceId")
+                        .HasColumnType("text");
+
+                    b.HasKey("FastaSectionId");
+
+                    b.HasIndex("CommentLineId");
+
+                    b.ToTable("FastaSections");
+                });
+
             modelBuilder.Entity("SerratusTest.Domain.Model.AccessionSection", b =>
                 {
                     b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
@@ -163,6 +189,15 @@ namespace SerratusTest.Migrations
                 {
                     b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
                         .WithMany("FamilySections")
+                        .HasForeignKey("CommentLineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SerratusTest.Domain.Model.FastaSection", b =>
+                {
+                    b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
+                        .WithMany("FastaSections")
                         .HasForeignKey("CommentLineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

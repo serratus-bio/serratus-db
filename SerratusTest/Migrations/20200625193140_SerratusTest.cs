@@ -85,6 +85,28 @@ namespace SerratusTest.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "FastaSections",
+                columns: table => new
+                {
+                    FastaSectionId = table.Column<int>(nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FastaSectionLineId = table.Column<int>(nullable: false),
+                    SequenceId = table.Column<string>(nullable: true),
+                    Sequence = table.Column<string>(nullable: true),
+                    CommentLineId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FastaSections", x => x.FastaSectionId);
+                    table.ForeignKey(
+                        name: "FK_FastaSections_CommentLines_CommentLineId",
+                        column: x => x.CommentLineId,
+                        principalTable: "CommentLines",
+                        principalColumn: "CommentLineId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AccessionSections_CommentLineId",
                 table: "AccessionSections",
@@ -93,6 +115,11 @@ namespace SerratusTest.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_FamilySections_CommentLineId",
                 table: "FamilySections",
+                column: "CommentLineId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FastaSections_CommentLineId",
+                table: "FastaSections",
                 column: "CommentLineId");
         }
 
@@ -103,6 +130,9 @@ namespace SerratusTest.Migrations
 
             migrationBuilder.DropTable(
                 name: "FamilySections");
+
+            migrationBuilder.DropTable(
+                name: "FastaSections");
 
             migrationBuilder.DropTable(
                 name: "CommentLines");
