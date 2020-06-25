@@ -49,9 +49,6 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Fam")
                         .HasColumnType("text");
 
-                    b.Property<int>("FamilySectionId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Glb")
                         .HasColumnType("integer");
 
@@ -98,9 +95,6 @@ namespace SerratusTest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("AccessionSectionId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Aln")
                         .HasColumnType("integer");

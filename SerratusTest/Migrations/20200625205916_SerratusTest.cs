@@ -39,8 +39,7 @@ namespace SerratusTest.Migrations
                     Cvg = table.Column<string>(nullable: true),
                     Fam = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
-                    CommentLineId = table.Column<int>(nullable: false),
-                    FamilySectionId = table.Column<int>(nullable: false)
+                    CommentLineId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,8 +70,7 @@ namespace SerratusTest.Migrations
                     TopAln = table.Column<int>(nullable: false),
                     TopLen = table.Column<int>(nullable: false),
                     TopName = table.Column<string>(nullable: true),
-                    CommentLineId = table.Column<int>(nullable: false),
-                    AccessionSectionId = table.Column<int>(nullable: false)
+                    CommentLineId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

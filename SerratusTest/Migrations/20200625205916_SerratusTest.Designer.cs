@@ -9,7 +9,7 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200625193140_SerratusTest")]
+    [Migration("20200625205916_SerratusTest")]
     partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,9 +50,6 @@ namespace SerratusTest.Migrations
 
                     b.Property<string>("Fam")
                         .HasColumnType("text");
-
-                    b.Property<int>("FamilySectionId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Glb")
                         .HasColumnType("integer");
@@ -100,9 +97,6 @@ namespace SerratusTest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("AccessionSectionId")
-                        .HasColumnType("integer");
 
                     b.Property<int>("Aln")
                         .HasColumnType("integer");

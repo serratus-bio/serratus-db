@@ -44,7 +44,6 @@ namespace SerratusTest.Services
                 TopLen = 861,
                 TopName = "TEM - 11 Proteus mirabilis",
                 CommentLineId = 1,
-                AccessionSectionId = 1
             });
             _serratusSummaryContext.SaveChanges();
         }
@@ -65,7 +64,6 @@ namespace SerratusTest.Services
                 Fam = "AMR",
                 Name = "TEM-11,Proteus mirabilis",
                 CommentLineId = 1,
-                FamilySectionId = 1
             });
             _serratusSummaryContext.SaveChanges();
         }

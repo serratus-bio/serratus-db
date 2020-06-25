@@ -20,6 +20,5 @@ namespace SerratusTest.Domain.Model
         public string Fam { get; set; }
         public string Name { get; set; }
         public int CommentLineId { get; set; }
-        public int FamilySectionId { get; set; }
     }
 }

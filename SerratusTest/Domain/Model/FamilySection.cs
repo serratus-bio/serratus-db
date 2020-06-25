@@ -21,6 +21,5 @@ namespace SerratusTest.Domain.Model
         public int TopLen { get; set; }
         public string TopName { get; set; }
         public int CommentLineId { get; set; }
-        public int AccessionSectionId { get; set; }
     }
 }

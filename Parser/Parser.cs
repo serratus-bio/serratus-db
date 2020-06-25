@@ -32,6 +32,7 @@ namespace ParserNs
             FastaLinesFromFile = new List<string>();
         }
 
+
         public string[] ReadFile()
         {
             var lines = File.ReadAllLines(textfile);
@@ -51,10 +52,10 @@ namespace ParserNs
             ParseFamilySection();
             ParseAccessionSection();
             ParseFastaSection();
-            createDbEntry();
+            CreateDbEntry();
         }
 
-        public void createDbEntry()
+        public void CreateDbEntry()
         {
             CommentLine.AccessionSections = AccessionSections;
             CommentLine.FamilySections = FamilySections;

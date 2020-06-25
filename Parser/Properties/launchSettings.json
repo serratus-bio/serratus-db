@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ParserNs": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Key": "Value"
+      }
+    }
+  }
+}
