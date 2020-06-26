@@ -13,7 +13,7 @@ namespace ParserNs
             parser.ParseFile();
             using (var context = new SerratusSummaryContext())
             {
-                context.CommentLines.Add(parser.CommentLine);
+                context.Runs.Add(parser.CommentLine);
                 context.SaveChanges();
             }
         }

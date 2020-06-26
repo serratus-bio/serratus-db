@@ -9,7 +9,7 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200625205916_SerratusTest")]
+    [Migration("20200626175434_SerratusTest")]
     partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,9 +36,6 @@ namespace SerratusTest.Migrations
                     b.Property<int>("Aln")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CommentLineId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Cvg")
                         .HasColumnType("text");
 
@@ -63,32 +60,17 @@ namespace SerratusTest.Migrations
                     b.Property<double>("PctId")
                         .HasColumnType("double precision");
 
-                    b.HasKey("AccessionSectionId");
-
-                    b.HasIndex("CommentLineId");
-
-                    b.ToTable("AccessionSections");
-                });
-
-            modelBuilder.Entity("SerratusTest.Domain.Model.CommentLine", b =>
-                {
-                    b.Property<int>("CommentLineId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Date")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Genome")
-                        .HasColumnType("text");
+                    b.Property<int>("RunId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Sra")
                         .HasColumnType("text");
 
-                    b.HasKey("CommentLineId");
+                    b.HasKey("AccessionSectionId");
 
-                    b.ToTable("CommentLines");
+                    b.HasIndex("RunId");
+
+                    b.ToTable("AccessionSections");
                 });
 
             modelBuilder.Entity("SerratusTest.Domain.Model.FamilySection", b =>
@@ -99,9 +81,6 @@ namespace SerratusTest.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<int>("Aln")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CommentLineId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Cvg")
@@ -122,8 +101,14 @@ namespace SerratusTest.Migrations
                     b.Property<int>("PctId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("RunId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Score")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Sra")
+                        .HasColumnType("text");
 
                     b.Property<string>("Top")
                         .HasColumnType("text");
@@ -139,7 +124,7 @@ namespace SerratusTest.Migrations
 
                     b.HasKey("FamilySectionId");
 
-                    b.HasIndex("CommentLineId");
+                    b.HasIndex("RunId");
 
                     b.ToTable("FamilySections");
                 });
@@ -151,10 +136,10 @@ namespace SerratusTest.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("CommentLineId")
+                    b.Property<int>("FastaSectionLineId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("FastaSectionLineId")
+                    b.Property<int>("RunId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Sequence")
@@ -163,36 +148,60 @@ namespace SerratusTest.Migrations
                     b.Property<string>("SequenceId")
                         .HasColumnType("text");
 
+                    b.Property<string>("Sra")
+                        .HasColumnType("text");
+
                     b.HasKey("FastaSectionId");
 
-                    b.HasIndex("CommentLineId");
+                    b.HasIndex("RunId");
 
                     b.ToTable("FastaSections");
                 });
 
+            modelBuilder.Entity("SerratusTest.Domain.Model.Run", b =>
+                {
+                    b.Property<int>("RunId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Date")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Genome")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Sra")
+                        .HasColumnType("text");
+
+                    b.HasKey("RunId");
+
+                    b.ToTable("Runs");
+                });
+
             modelBuilder.Entity("SerratusTest.Domain.Model.AccessionSection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
+                    b.HasOne("SerratusTest.Domain.Model.Run", null)
                         .WithMany("AccessionSections")
-                        .HasForeignKey("CommentLineId")
+                        .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("SerratusTest.Domain.Model.FamilySection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
+                    b.HasOne("SerratusTest.Domain.Model.Run", null)
                         .WithMany("FamilySections")
-                        .HasForeignKey("CommentLineId")
+                        .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("SerratusTest.Domain.Model.FastaSection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.CommentLine", null)
+                    b.HasOne("SerratusTest.Domain.Model.Run", null)
                         .WithMany("FastaSections")
-                        .HasForeignKey("CommentLineId")
+                        .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

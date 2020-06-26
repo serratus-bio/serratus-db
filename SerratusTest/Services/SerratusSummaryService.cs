@@ -15,11 +15,11 @@ namespace SerratusTest.Services
             _serratusSummaryContext = serratusSummaryContext;
         }
 
-        public void AddCommentLine()
+        public void AddRun()
         {
-            _serratusSummaryContext.CommentLines.Add(new Run
+            _serratusSummaryContext.Runs.Add(new Run
             {
-                CommentLineId = 1,
+                RunId = 1,
                 Sra = "ERR2756788",
                 Genome = "cov3ma",
                 Date = "200607 - 01:47"
@@ -43,7 +43,7 @@ namespace SerratusTest.Services
                 TopAln = 570,
                 TopLen = 861,
                 TopName = "TEM - 11 Proteus mirabilis",
-                CommentLineId = 1,
+                RunId = 1,
             });
             _serratusSummaryContext.SaveChanges();
         }
@@ -63,7 +63,7 @@ namespace SerratusTest.Services
                 Cvg = "Oo.ooOOOoOOOOOOOOOOOO.Oo_",
                 Fam = "AMR",
                 Name = "TEM-11,Proteus mirabilis",
-                CommentLineId = 1,
+                RunId = 1,
             });
             _serratusSummaryContext.SaveChanges();
         }

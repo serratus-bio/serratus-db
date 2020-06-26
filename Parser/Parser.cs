@@ -13,6 +13,7 @@ namespace ParserNs
     public class Parser
     {
         public string CommentLineFromFile { get; set; }
+        public string Sra { get; set; }
 
         public Run CommentLine { get; set; } = new Run();
         public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
@@ -68,6 +69,7 @@ namespace ParserNs
             string[] sra = split[0].Split(new char[] { '=' });
             string[] gen = split[1].Split(new char[] { '=' });
             string[] date = split[2].Split(new char[] { '=' });
+            Sra = sra[2];
             CommentLine.Sra = sra[2];
             CommentLine.Genome = gen[1];
             CommentLine.Date = date[1];
@@ -90,6 +92,7 @@ namespace ParserNs
             string topName = line[10].Split(new char[] { '=' })[1];
             FamilySections.Add(new FamilySection{
                 FamilySectionLineId = familySectionLineId,
+                Sra = Sra,
                 Family = family,
                 Score = score,
                 PctId = pctId,
@@ -121,6 +124,8 @@ namespace ParserNs
             {
                 AccessionSectionLineId = accessionSectionLineId,
                 Acc = acc,
+                Sra = Sra,
+                Fam = fam,
                 PctId = pctId,
                 Aln = aln,
                 Glb = glb,
@@ -128,7 +133,6 @@ namespace ParserNs
                 CvgPct = cvgPct,
                 Depth = depth,
                 Cvg = cvg,
-                Fam = fam,
                 Name = name,
             });
         }
@@ -182,6 +186,7 @@ namespace ParserNs
                     FastaSections.Add(new FastaSection
                     {
                         FastaSectionLineId = lineNumber[j],
+                        Sra = Sra,
                         SequenceId = firstLine[j],
                         Sequence = secondLine[j]
                     });

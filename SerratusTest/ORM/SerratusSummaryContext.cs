@@ -9,11 +9,11 @@ namespace SerratusTest.ORM
 {
     public class SerratusSummaryContext : DbContext
     {
-        public DbSet<Run> CommentLines { get; set; }
+        public DbSet<Run> Runs { get; set; }
         public DbSet<FamilySection> FamilySections{ get; set; }
         public DbSet<AccessionSection> AccessionSections { get; set; }
         public DbSet<FastaSection> FastaSections { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("host=serratus-test-two.csa1zyyc79kj.us-east-2.rds.amazonaws.com;username=postgres;password=bandit12");
+            => optionsBuilder.UseNpgsql("host=localhost;database=SerratusTest;username=postgres;password=bandit");
     }
 }
