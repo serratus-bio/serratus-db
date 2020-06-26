@@ -9,6 +9,8 @@ namespace SerratusTest.Domain.Model
     {
         public int FamilySectionId { get; set; }
         public int FamilySectionLineId { get; set; }
+        public int RunId { get; set; }
+        public string Sra { get; set; }
         public string Family { get; set; }
         public int Score { get; set; }
         public int PctId { get; set; }
@@ -20,6 +22,5 @@ namespace SerratusTest.Domain.Model
         public int TopAln { get; set; }
         public int TopLen { get; set; }
         public string TopName { get; set; }
-        public int CommentLineId { get; set; }
     }
 }

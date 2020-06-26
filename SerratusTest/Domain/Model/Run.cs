@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SerratusTest.Domain.Model
 {
-    public class CommentLine
+    public class Run
     {
-        public int CommentLineId { get; set; }
+        public int RunId { get; set; }
         public string Sra { get; set; }
         public string Genome { get; set; }
         public string Date { get; set; }

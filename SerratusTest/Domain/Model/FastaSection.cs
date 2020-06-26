@@ -9,8 +9,9 @@ namespace SerratusTest.Domain.Model
     {
         public int FastaSectionId { get; set; }
         public int FastaSectionLineId { get; set; }
+        public int RunId { get; set; }
+        public string Sra { get; set; }
         public string SequenceId { get; set; }
         public string Sequence { get; set; }
-        public int CommentLineId { get; set; }
     }
 }

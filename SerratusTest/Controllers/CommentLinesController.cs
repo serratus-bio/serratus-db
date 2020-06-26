@@ -31,14 +31,14 @@ namespace SerratusTest.Controllers
         }
         // GET: api/CommentLines
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommentLine>>> GetCommentLines()
+        public async Task<ActionResult<IEnumerable<Run>>> GetCommentLines()
         {
             return await _context.CommentLines.ToListAsync();
         }
 
         // GET: api/CommentLines/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<CommentLine>> GetCommentLine(int id)
+        public async Task<ActionResult<Run>> GetCommentLine(int id)
         {
             var commentLine = await _context.CommentLines.FindAsync(id);
 
@@ -54,7 +54,7 @@ namespace SerratusTest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCommentLine(int id, CommentLine commentLine)
+        public async Task<IActionResult> PutCommentLine(int id, Run commentLine)
         {
             if (id != commentLine.CommentLineId)
             {
@@ -86,7 +86,7 @@ namespace SerratusTest.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<CommentLine>> PostCommentLine(CommentLine commentLine)
+        public async Task<ActionResult<Run>> PostCommentLine(Run commentLine)
         {
             _context.CommentLines.Add(commentLine);
             await _context.SaveChangesAsync();
@@ -96,7 +96,7 @@ namespace SerratusTest.Controllers
 
         // DELETE: api/CommentLines/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CommentLine>> DeleteCommentLine(int id)
+        public async Task<ActionResult<Run>> DeleteCommentLine(int id)
         {
             var commentLine = await _context.CommentLines.FindAsync(id);
             if (commentLine == null)

@@ -17,7 +17,7 @@ namespace SerratusTest.Services
 
         public void AddCommentLine()
         {
-            _serratusSummaryContext.CommentLines.Add(new CommentLine
+            _serratusSummaryContext.CommentLines.Add(new Run
             {
                 CommentLineId = 1,
                 Sra = "ERR2756788",

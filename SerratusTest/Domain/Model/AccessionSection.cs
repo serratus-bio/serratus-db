@@ -9,6 +9,8 @@ namespace SerratusTest.Domain.Model
     {
         public int AccessionSectionId { get; set; }
         public int AccessionSectionLineId { get; set; }
+        public string Sra { get; set; }
+        public string Fam { get; set; }
         public string Acc { get; set; }
         public double PctId { get; set; }
         public int Aln { get; set; }
@@ -17,8 +19,7 @@ namespace SerratusTest.Domain.Model
         public int CvgPct { get; set; }
         public double Depth { get; set; }
         public string Cvg { get; set; }
-        public string Fam { get; set; }
         public string Name { get; set; }
-        public int CommentLineId { get; set; }
+        public int RunId { get; set; }
     }
 }

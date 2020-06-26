@@ -14,7 +14,7 @@ namespace ParserNs
     {
         public string CommentLineFromFile { get; set; }
 
-        public CommentLine CommentLine { get; set; } = new CommentLine();
+        public Run CommentLine { get; set; } = new Run();
         public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
         public List<AccessionSection> AccessionSections { get; set; } = new List<AccessionSection>();
         public List<FastaSection> FastaSections { get; set; } = new List<FastaSection>();
@@ -62,7 +62,7 @@ namespace ParserNs
             CommentLine.FastaSections = FastaSections;
         }
 
-        public CommentLine ParseCommentLine()
+        public Run ParseCommentLine()
         {
             string[] split = CommentLineFromFile.Split(new char[] { ',' });
             string[] sra = split[0].Split(new char[] { '=' });

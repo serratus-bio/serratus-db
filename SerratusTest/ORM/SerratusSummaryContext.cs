@@ -9,7 +9,7 @@ namespace SerratusTest.ORM
 {
     public class SerratusSummaryContext : DbContext
     {
-        public DbSet<CommentLine> CommentLines { get; set; }
+        public DbSet<Run> CommentLines { get; set; }
         public DbSet<FamilySection> FamilySections{ get; set; }
         public DbSet<AccessionSection> AccessionSections { get; set; }
         public DbSet<FastaSection> FastaSections { get; set; }
