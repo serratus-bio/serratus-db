@@ -9,13 +9,11 @@ namespace ParserNs
         static void Main(string[] args)
         {
             var parser = new Parser();
-            parser.ReadFile();
-            parser.ParseFile();
-            using (var context = new SerratusSummaryContext())
-            {
-                context.Runs.Add(parser.CommentLine);
-                context.SaveChanges();
-            }
+            parser.GetBucketsFromS3();
+            Console.WriteLine("help");
+            //parser.ReadFile();
+            //parser.ParseFile();
+
         }
     }
 }

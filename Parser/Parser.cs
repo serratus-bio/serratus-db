@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore.Internal;
 using System.Runtime.InteropServices;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
+using Amazon.S3;
+using Amazon.S3.Model;
+using System.Threading;
 
 namespace ParserNs
 {
@@ -15,7 +18,10 @@ namespace ParserNs
         public string CommentLineFromFile { get; set; }
         public string Sra { get; set; }
 
-        public Run CommentLine { get; set; } = new Run();
+        private readonly CancellationToken cancellationToken;
+        public List<string> SummaryFiles { get; set; } = new List<string>();
+
+        public Run Run { get; set; } = new Run();
         public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
         public List<AccessionSection> AccessionSections { get; set; } = new List<AccessionSection>();
         public List<FastaSection> FastaSections { get; set; } = new List<FastaSection>();
@@ -24,7 +30,7 @@ namespace ParserNs
         public List<string> AccessionLinesFromFile { get; set; }
         public List<string> FastaLinesFromFile { get; set; }
 
-        static readonly string textfile = @"C:\Users\Dan\Desktop\summary.txt";
+        static readonly string textfile = @"C:\Users\Dan\Desktop\tettest.txt";
 
         public Parser()
         {
@@ -33,10 +39,66 @@ namespace ParserNs
             FastaLinesFromFile = new List<string>();
         }
 
-
-        public string[] ReadFile()
+        public void GetBucketsFromS3()
         {
-            var lines = File.ReadAllLines(textfile);
+            S3Object obj = new S3Object();
+
+            AmazonS3Config config = new AmazonS3Config();
+
+            AmazonS3Client s3Client = new AmazonS3Client(
+                    accessKey,
+                    secretKey,
+                    config
+                    );
+            var request = new ListObjectsV2Request{ BucketName = "lovelywater", Prefix = "summary" };
+            Task<ListObjectsV2Response> buckets = s3Client.ListObjectsV2Async(request);
+            var res = buckets.Result;
+            res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
+            Console.WriteLine("Success!");
+            GetDataFromBucketList();
+        }
+
+        public void GetDataFromBucketList()
+        {
+            AmazonS3Config config = new AmazonS3Config();
+
+            AmazonS3Client s3Client = new AmazonS3Client(
+                    accessKey,
+                    secretKey,
+                    config
+                    );
+            foreach ( string file in SummaryFiles )
+            {
+                GetObjectRequest request = new GetObjectRequest
+                {
+                    BucketName = "lovelywater",
+                    Key = $"{file}"
+                };
+
+                string responseBody = "";
+
+                using (Task<GetObjectResponse> res = s3Client.GetObjectAsync(request))
+                using (Stream stream = res.Result.ResponseStream)
+                using(StreamReader reader = new StreamReader(stream))
+                { 
+                    responseBody = reader.ReadToEnd();
+                    var lines = responseBody.Split('\n');
+                    ReadFile(lines);
+                    ParseFile();
+                }
+                
+                using (var context = new SerratusSummaryContext())
+                {
+                    context.Runs.Add(Run);
+                    context.SaveChanges();
+                }
+                Console.WriteLine("Success!");
+            }
+        }
+
+        public string[] ReadFile(string [] lines)
+        {
+            //var lines = File.ReadAllLines(textfile);
             foreach (string line in lines)
             {
                 if (line.StartsWith("S")) CommentLineFromFile = line;
@@ -49,6 +111,10 @@ namespace ParserNs
 
         public void ParseFile()
         {
+            Run = new Run();
+            AccessionSections = new List<AccessionSection>();
+            FamilySections = new List<FamilySection>();
+            FastaSections = new List<FastaSection>();
             ParseCommentLine();
             ParseFamilySection();
             ParseAccessionSection();
@@ -58,9 +124,9 @@ namespace ParserNs
 
         public void CreateDbEntry()
         {
-            CommentLine.AccessionSections = AccessionSections;
-            CommentLine.FamilySections = FamilySections;
-            CommentLine.FastaSections = FastaSections;
+            Run.AccessionSections = AccessionSections;
+            Run.FamilySections = FamilySections;
+            Run.FastaSections = FastaSections;
         }
 
         public Run ParseCommentLine()
@@ -70,10 +136,10 @@ namespace ParserNs
             string[] gen = split[1].Split(new char[] { '=' });
             string[] date = split[2].Split(new char[] { '=' });
             Sra = sra[2];
-            CommentLine.Sra = sra[2];
-            CommentLine.Genome = gen[1];
-            CommentLine.Date = date[1];
-            return CommentLine;
+            Run.Sra = sra[2];
+            Run.Genome = gen[1];
+            Run.Date = date[1];
+            return Run;
         }
         
         public void ParseFamilySectionLine(string[] line, int lineId)
