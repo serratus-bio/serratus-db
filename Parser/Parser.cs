@@ -10,30 +10,34 @@ using SerratusTest.ORM;
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.Threading;
+using Amazon;
 
 namespace ParserNs
 {
     public class Parser
     {
+        private readonly CancellationToken cancellationToken;
+        private readonly string _accessKey;
+        private readonly string _secretKey;
+
         public string CommentLineFromFile { get; set; }
         public string Sra { get; set; }
-
-        private readonly CancellationToken cancellationToken;
-        public List<string> SummaryFiles { get; set; } = new List<string>();
-
+        public string ContinuationToken { get; set; } = "";
+        
         public Run Run { get; set; } = new Run();
         public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
         public List<AccessionSection> AccessionSections { get; set; } = new List<AccessionSection>();
         public List<FastaSection> FastaSections { get; set; } = new List<FastaSection>();
 
+        public List<string> SummaryFiles { get; set; } = new List<string>();
         public List<string> FamilyLinesFromFile { get; set; }
         public List<string> AccessionLinesFromFile { get; set; }
         public List<string> FastaLinesFromFile { get; set; }
 
-        static readonly string textfile = @"C:\Users\Dan\Desktop\tettest.txt";
-
-        public Parser()
+        public Parser(string accessKey, string secretKey)
         {
+            _accessKey = accessKey;
+            _secretKey = secretKey;
             FamilyLinesFromFile = new List<string>();
             AccessionLinesFromFile = new List<string>();
             FastaLinesFromFile = new List<string>();
@@ -41,30 +45,47 @@ namespace ParserNs
 
         public void GetBucketsFromS3()
         {
-            S3Object obj = new S3Object();
-
-            AmazonS3Config config = new AmazonS3Config();
-
-            AmazonS3Client s3Client = new AmazonS3Client(
-                    accessKey,
-                    secretKey,
-                    config
-                    );
-            var request = new ListObjectsV2Request{ BucketName = "lovelywater", Prefix = "summary" };
-            Task<ListObjectsV2Response> buckets = s3Client.ListObjectsV2Async(request);
-            var res = buckets.Result;
-            res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
-            Console.WriteLine("Success!");
-            GetDataFromBucketList();
+            if ( ContinuationToken == "")
+            {
+                S3Object obj = new S3Object();
+                AmazonS3Config config = new AmazonS3Config();
+                AmazonS3Client s3Client = new AmazonS3Client(
+                        _accessKey,
+                        _secretKey,
+                        config
+                        );
+                var request = new ListObjectsV2Request { BucketName = "lovelywater", Prefix = "summary" };
+                Task<ListObjectsV2Response> buckets = s3Client.ListObjectsV2Async(request);
+                var res = buckets.Result;
+                ContinuationToken = res.NextContinuationToken;
+                res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
+                GetDataFromBucketList();
+            }
+            else
+            {
+                SummaryFiles = new List<string>();
+                S3Object obj = new S3Object();
+                AmazonS3Config config = new AmazonS3Config();
+                AmazonS3Client s3Client = new AmazonS3Client(
+                        _accessKey,
+                        _secretKey,
+                        config
+                        );
+                var request = new ListObjectsV2Request { BucketName = "lovelywater", Prefix = "summary", ContinuationToken = ContinuationToken };
+                Task<ListObjectsV2Response> buckets = s3Client.ListObjectsV2Async(request);
+                var res = buckets.Result;
+                ContinuationToken = res.NextContinuationToken;
+                res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
+                GetDataFromBucketList();
+            }
         }
 
         public void GetDataFromBucketList()
         {
             AmazonS3Config config = new AmazonS3Config();
-
             AmazonS3Client s3Client = new AmazonS3Client(
-                    accessKey,
-                    secretKey,
+                    _accessKey,
+                    _secretKey,
                     config
                     );
             foreach ( string file in SummaryFiles )
@@ -80,25 +101,26 @@ namespace ParserNs
                 using (Task<GetObjectResponse> res = s3Client.GetObjectAsync(request))
                 using (Stream stream = res.Result.ResponseStream)
                 using(StreamReader reader = new StreamReader(stream))
+                using (var context = new SerratusSummaryContext())
                 { 
                     responseBody = reader.ReadToEnd();
                     var lines = responseBody.Split('\n');
                     ReadFile(lines);
                     ParseFile();
-                }
-                
-                using (var context = new SerratusSummaryContext())
-                {
                     context.Runs.Add(Run);
                     context.SaveChanges();
                 }
-                Console.WriteLine("Success!");
             }
+            GetBucketsFromS3();
         }
 
         public string[] ReadFile(string [] lines)
         {
-            //var lines = File.ReadAllLines(textfile);
+            CommentLineFromFile = "";
+            FamilyLinesFromFile = new List<string>();
+            AccessionLinesFromFile = new List<string>();
+            FastaLinesFromFile = new List<string>();
+
             foreach (string line in lines)
             {
                 if (line.StartsWith("S")) CommentLineFromFile = line;

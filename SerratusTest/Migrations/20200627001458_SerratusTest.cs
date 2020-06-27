@@ -30,6 +30,7 @@ namespace SerratusTest.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AccessionSectionLineId = table.Column<int>(nullable: false),
                     Sra = table.Column<string>(nullable: true),
+                    RunId = table.Column<int>(nullable: false),
                     Fam = table.Column<string>(nullable: true),
                     Acc = table.Column<string>(nullable: true),
                     PctId = table.Column<double>(nullable: false),
@@ -39,8 +40,7 @@ namespace SerratusTest.Migrations
                     CvgPct = table.Column<int>(nullable: false),
                     Depth = table.Column<double>(nullable: false),
                     Cvg = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    RunId = table.Column<int>(nullable: false)
+                    Name = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
