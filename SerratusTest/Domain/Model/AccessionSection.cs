@@ -11,7 +11,6 @@ namespace SerratusTest.Domain.Model
         public int AccessionSectionLineId { get; set; }
         public string Sra { get; set; }
         public int RunId { get; set; }
-
         public string Fam { get; set; }
         public string Acc { get; set; }
         public double PctId { get; set; }
