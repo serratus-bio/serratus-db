@@ -11,6 +11,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using System.Threading;
 using Amazon;
+using System.Diagnostics;
 
 namespace ParserNs
 {
@@ -59,7 +60,7 @@ namespace ParserNs
                 var res = buckets.Result;
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
-                GetDataFromBucketList();
+                GetDataFromBucketList().Wait();
             }
             else
             {
@@ -76,11 +77,11 @@ namespace ParserNs
                 var res = buckets.Result;
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
-                GetDataFromBucketList();
+                GetDataFromBucketList().Wait();
             }
         }
 
-        public void GetDataFromBucketList()
+        public async Task GetDataFromBucketList()
         {
             AmazonS3Config config = new AmazonS3Config();
             AmazonS3Client s3Client = new AmazonS3Client(
@@ -88,31 +89,79 @@ namespace ParserNs
                     _secretKey,
                     config
                     );
+            var oneFile = Stopwatch.StartNew();
             foreach ( string file in SummaryFiles )
             {
-                GetObjectRequest request = new GetObjectRequest
+                var request = new GetObjectRequest
                 {
                     BucketName = "lovelywater",
                     Key = $"{file}"
                 };
 
                 string responseBody = "";
-
-                using (Task<GetObjectResponse> res = s3Client.GetObjectAsync(request))
-                using (Stream stream = res.Result.ResponseStream)
-                using(StreamReader reader = new StreamReader(stream))
-                using (var context = new SerratusSummaryContext())
-                { 
-                    responseBody = reader.ReadToEnd();
-                    var lines = responseBody.Split('\n');
-                    ReadFile(lines);
-                    ParseFile(file);
-                    context.Runs.Add(Run);
-                    context.SaveChanges();
+                var s3Stopwatch = Stopwatch.StartNew();
+                var result = await s3Client.GetObjectAsync(request);
+                //Console.WriteLine($"{s3Stopwatch.ElapsedMilliseconds}");
+                using (var stream = result.ResponseStream)
+                using (var reader = new StreamReader(stream))
+                {
+                    var readerStopwatch = Stopwatch.StartNew();
+                    responseBody = await reader.ReadToEndAsync();
+                    //Console.WriteLine($"{readerStopwatch.ElapsedMilliseconds}");
+                    _ = Task.Run(async () =>
+                    { 
+                        using (var context = new SerratusSummaryContext())
+                        {
+                            var parserStopwatch = Stopwatch.StartNew();
+                            var lines = responseBody.Split('\n');
+                            ReadFile(lines);
+                            ParseFile(file);
+                            //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
+                            var dbStopwatch = Stopwatch.StartNew();
+                            context.Runs.Add(Run);
+                            await context.SaveChangesAsync();
+                            //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
+                        }
+                    });
                 }
             }
+            Console.WriteLine($"file: {oneFile.ElapsedMilliseconds}");
             GetBucketsFromS3();
         }
+
+        //public void GetDataFromBucketList()
+        //{
+        //    AmazonS3Config config = new AmazonS3Config();
+        //    AmazonS3Client s3Client = new AmazonS3Client(
+        //            _accessKey,
+        //            _secretKey,
+        //            config
+        //            );
+        //    foreach (string file in SummaryFiles)
+        //    {
+        //        GetObjectRequest request = new GetObjectRequest
+        //        {
+        //            BucketName = "lovelywater",
+        //            Key = $"{file}"
+        //        };
+
+        //        string responseBody = "";
+
+        //        using (Task<GetObjectResponse> res = s3Client.GetObjectAsync(request))
+        //        using (Stream stream = res.Result.ResponseStream)
+        //        using (StreamReader reader = new StreamReader(stream))
+        //        using (var context = new SerratusSummaryContext())
+        //        {
+        //            responseBody = reader.ReadToEnd();
+        //            var lines = responseBody.Split('\n');
+        //            ReadFile(lines);
+        //            ParseFile(file);
+        //            context.Runs.Add(Run);
+        //            context.SaveChanges();
+        //        }
+        //    }
+        //    GetBucketsFromS3();
+        //}
 
         public string[] ReadFile(string [] lines)
         {
