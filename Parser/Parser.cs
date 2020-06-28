@@ -106,7 +106,7 @@ namespace ParserNs
                     responseBody = reader.ReadToEnd();
                     var lines = responseBody.Split('\n');
                     ReadFile(lines);
-                    ParseFile();
+                    ParseFile(file);
                     context.Runs.Add(Run);
                     context.SaveChanges();
                 }
@@ -131,13 +131,13 @@ namespace ParserNs
             return lines;
         }
 
-        public void ParseFile()
+        public void ParseFile(string file)
         {
             Run = new Run();
             AccessionSections = new List<AccessionSection>();
             FamilySections = new List<FamilySection>();
             FastaSections = new List<FastaSection>();
-            ParseCommentLine();
+            ParseCommentLine(file);
             ParseFamilySection();
             ParseAccessionSection();
             ParseFastaSection();
@@ -151,13 +151,14 @@ namespace ParserNs
             Run.FastaSections = FastaSections;
         }
 
-        public Run ParseCommentLine()
+        public Run ParseCommentLine(string file)
         {
             string[] split = CommentLineFromFile.Split(new char[] { ',' });
             string[] sra = split[0].Split(new char[] { '=' });
             string[] gen = split[1].Split(new char[] { '=' });
             string[] date = split[2].Split(new char[] { '=' });
             Sra = sra[2];
+            Run.FileName = file;
             Run.Sra = sra[2];
             Run.Genome = gen[1];
             Run.Date = date[1];

@@ -9,7 +9,7 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200627001458_SerratusTest")]
+    [Migration("20200628192954_SerratusTest")]
     partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -166,6 +166,9 @@ namespace SerratusTest.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Date")
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
                         .HasColumnType("text");
 
                     b.Property<string>("Genome")

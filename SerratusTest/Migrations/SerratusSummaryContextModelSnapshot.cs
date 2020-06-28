@@ -166,6 +166,9 @@ namespace SerratusTest.Migrations
                     b.Property<string>("Date")
                         .HasColumnType("text");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("text");
+
                     b.Property<string>("Genome")
                         .HasColumnType("text");
 

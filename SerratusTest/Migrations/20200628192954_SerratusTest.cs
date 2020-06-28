@@ -14,6 +14,7 @@ namespace SerratusTest.Migrations
                     RunId = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Sra = table.Column<string>(nullable: true),
+                    FileName = table.Column<string>(nullable: true),
                     Genome = table.Column<string>(nullable: true),
                     Date = table.Column<string>(nullable: true)
                 },

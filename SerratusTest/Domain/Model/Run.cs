@@ -9,6 +9,7 @@ namespace SerratusTest.Domain.Model
     {
         public int RunId { get; set; }
         public string Sra { get; set; }
+        public string FileName { get; set; }
         public string Genome { get; set; }
         public string Date { get; set; }
         public IList<FamilySection> FamilySections { get; set; }
