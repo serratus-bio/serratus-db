@@ -12,6 +12,7 @@ using Amazon.S3.Model;
 using System.Threading;
 using Amazon;
 using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace ParserNs
 {
@@ -115,6 +116,7 @@ namespace ParserNs
                             var finishedFile = ParseFile(fileName, unparsedFile);
                             //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
                             var dbStopwatch = Stopwatch.StartNew();
+                            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                             context.Runs.Add(finishedFile.Run);
                             await context.SaveChangesAsync();
                             //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
@@ -124,8 +126,6 @@ namespace ParserNs
             }
             if (moreKeys == true)
             {
-                
-                
                 GetBucketsFromS3();
             }
             else
@@ -137,7 +137,6 @@ namespace ParserNs
         public UnparsedFile ReadFile(string [] lines)
         {
             var unparsedFile = new UnparsedFile();
-
             foreach (string line in lines)
             {
                 if (line.StartsWith("S")) unparsedFile.CommentLineFromFile = line;

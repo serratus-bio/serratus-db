@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace SerratusTest.Migrations
 {
-    public partial class SerratusTest : Migration
+    public partial class Serratus : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
