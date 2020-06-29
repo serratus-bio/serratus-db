@@ -20,32 +20,20 @@ namespace ParserNs
         private readonly CancellationToken cancellationToken;
         private readonly string _accessKey;
         private readonly string _secretKey;
-
-        public string CommentLineFromFile { get; set; }
-        public string Sra { get; set; }
-        public string ContinuationToken { get; set; } = "";
         
-        public Run Run { get; set; } = new Run();
-        public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
-        public List<AccessionSection> AccessionSections { get; set; } = new List<AccessionSection>();
-        public List<FastaSection> FastaSections { get; set; } = new List<FastaSection>();
-
-        public List<string> SummaryFiles { get; set; } = new List<string>();
-        public List<string> FamilyLinesFromFile { get; set; }
-        public List<string> AccessionLinesFromFile { get; set; }
-        public List<string> FastaLinesFromFile { get; set; }
+        public string ContinuationToken { get; set; } = "";
+        public List<string> SummaryFiles { get; set; }
 
         public Parser(string accessKey, string secretKey)
         {
             _accessKey = accessKey;
             _secretKey = secretKey;
-            FamilyLinesFromFile = new List<string>();
-            AccessionLinesFromFile = new List<string>();
-            FastaLinesFromFile = new List<string>();
         }
 
         public void GetBucketsFromS3()
         {
+            var moreKeys = true;
+            SummaryFiles = new List<string>();
             if ( ContinuationToken == "")
             {
                 S3Object obj = new S3Object();
@@ -60,7 +48,7 @@ namespace ParserNs
                 var res = buckets.Result;
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
-                GetDataFromBucketList().Wait();
+                GetDataFromBucketList(moreKeys).Wait();
             }
             else
             {
@@ -77,11 +65,20 @@ namespace ParserNs
                 var res = buckets.Result;
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
-                GetDataFromBucketList().Wait();
+                if (res.KeyCount < 1000)
+                {
+                    moreKeys = false;
+                    GetDataFromBucketList(moreKeys).Wait();
+                    return;
+                }
+                else
+                {
+                    GetDataFromBucketList(moreKeys).Wait();
+                }
             }
         }
 
-        public async Task GetDataFromBucketList()
+        public async Task GetDataFromBucketList(bool moreKeys)
         {
             AmazonS3Config config = new AmazonS3Config();
             AmazonS3Client s3Client = new AmazonS3Client(
@@ -90,12 +87,12 @@ namespace ParserNs
                     config
                     );
             var oneFile = Stopwatch.StartNew();
-            foreach ( string file in SummaryFiles )
+            foreach ( string fileName in SummaryFiles )
             {
                 var request = new GetObjectRequest
                 {
                     BucketName = "lovelywater",
-                    Key = $"{file}"
+                    Key = $"{fileName}"
                 };
 
                 string responseBody = "";
@@ -114,107 +111,80 @@ namespace ParserNs
                         {
                             var parserStopwatch = Stopwatch.StartNew();
                             var lines = responseBody.Split('\n');
-                            ReadFile(lines);
-                            ParseFile(file);
+                            var unparsedFile = ReadFile(lines);
+                            var finishedFile = ParseFile(fileName, unparsedFile);
                             //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
                             var dbStopwatch = Stopwatch.StartNew();
-                            context.Runs.Add(Run);
+                            context.Runs.Add(finishedFile.Run);
                             await context.SaveChangesAsync();
                             //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
                         }
                     });
                 }
             }
-            Console.WriteLine($"file: {oneFile.ElapsedMilliseconds}");
-            GetBucketsFromS3();
+            if (moreKeys == true)
+            {
+                
+                
+                GetBucketsFromS3();
+            }
+            else
+            {
+                return;
+            }
         }
 
-        //public void GetDataFromBucketList()
-        //{
-        //    AmazonS3Config config = new AmazonS3Config();
-        //    AmazonS3Client s3Client = new AmazonS3Client(
-        //            _accessKey,
-        //            _secretKey,
-        //            config
-        //            );
-        //    foreach (string file in SummaryFiles)
-        //    {
-        //        GetObjectRequest request = new GetObjectRequest
-        //        {
-        //            BucketName = "lovelywater",
-        //            Key = $"{file}"
-        //        };
-
-        //        string responseBody = "";
-
-        //        using (Task<GetObjectResponse> res = s3Client.GetObjectAsync(request))
-        //        using (Stream stream = res.Result.ResponseStream)
-        //        using (StreamReader reader = new StreamReader(stream))
-        //        using (var context = new SerratusSummaryContext())
-        //        {
-        //            responseBody = reader.ReadToEnd();
-        //            var lines = responseBody.Split('\n');
-        //            ReadFile(lines);
-        //            ParseFile(file);
-        //            context.Runs.Add(Run);
-        //            context.SaveChanges();
-        //        }
-        //    }
-        //    GetBucketsFromS3();
-        //}
-
-        public string[] ReadFile(string [] lines)
+        public UnparsedFile ReadFile(string [] lines)
         {
-            CommentLineFromFile = "";
-            FamilyLinesFromFile = new List<string>();
-            AccessionLinesFromFile = new List<string>();
-            FastaLinesFromFile = new List<string>();
+            var unparsedFile = new UnparsedFile();
 
             foreach (string line in lines)
             {
-                if (line.StartsWith("S")) CommentLineFromFile = line;
-                else if (line.StartsWith("f")) FamilyLinesFromFile.Add(line);
-                else if (line.StartsWith("a")) AccessionLinesFromFile.Add(line);
-                else if (line.StartsWith(">") || line.StartsWith("A") || line.StartsWith("T") || line.StartsWith("C") || line.StartsWith("G")) FastaLinesFromFile.Add(line);
+                if (line.StartsWith("S")) unparsedFile.CommentLineFromFile = line;
+                else if (line.StartsWith("f")) unparsedFile.FamilyLinesFromFile.Add(line);
+                else if (line.StartsWith("a")) unparsedFile.AccessionLinesFromFile.Add(line);
+                else if (line.StartsWith(">") || line.StartsWith("A") || line.StartsWith("T") || line.StartsWith("C") || line.StartsWith("G")) unparsedFile.FastaLinesFromFile.Add(line);
             }
-            return lines;
+            return unparsedFile;
         }
 
-        public void ParseFile(string file)
+        public ParsedFile ParseFile(string fileName, UnparsedFile unparsedFile)
         {
-            Run = new Run();
-            AccessionSections = new List<AccessionSection>();
-            FamilySections = new List<FamilySection>();
-            FastaSections = new List<FastaSection>();
-            ParseCommentLine(file);
-            ParseFamilySection();
-            ParseAccessionSection();
-            ParseFastaSection();
-            CreateDbEntry();
+            var partiallyParsedFileC = ParseCommentLine(fileName, unparsedFile);
+            var partiallyParsedFileCF = ParseFamilySection(partiallyParsedFileC, unparsedFile);
+            var partiallyParsedFileCFA = ParseAccessionSection(partiallyParsedFileCF, unparsedFile);
+            var parsedFile = ParseFastaSection(partiallyParsedFileCFA, unparsedFile);
+            var finishedFile = CreateDbEntry(parsedFile);
+            return finishedFile;
         }
 
-        public void CreateDbEntry()
+        public ParsedFile CreateDbEntry(ParsedFile parsedFile)
         {
-            Run.AccessionSections = AccessionSections;
-            Run.FamilySections = FamilySections;
-            Run.FastaSections = FastaSections;
+            var finishedFile = parsedFile;
+            finishedFile.Run.AccessionSections = parsedFile.AccessionSections;
+            finishedFile.Run.FamilySections = parsedFile.FamilySections;
+            finishedFile.Run.FastaSections = parsedFile.FastaSections;
+            return finishedFile;
         }
 
-        public Run ParseCommentLine(string file)
+        public ParsedFile ParseCommentLine(string fileName, UnparsedFile unparsedFile)
         {
-            string[] split = CommentLineFromFile.Split(new char[] { ',' });
+            string[] split = unparsedFile.CommentLineFromFile.Split(new char[] { ',' });
             string[] sra = split[0].Split(new char[] { '=' });
             string[] gen = split[1].Split(new char[] { '=' });
             string[] date = split[2].Split(new char[] { '=' });
-            Sra = sra[2];
-            Run.FileName = file;
-            Run.Sra = sra[2];
-            Run.Genome = gen[1];
-            Run.Date = date[1];
-            return Run;
+            unparsedFile.Sra = sra[2];
+            var run = new Run();
+            run.FileName = fileName;
+            run.Sra = sra[2];
+            run.Genome = gen[1];
+            run.Date = date[1];
+            var partiallyParsedFile = new ParsedFile();
+            partiallyParsedFile.Run = run;
+            return partiallyParsedFile;
         }
         
-        public void ParseFamilySectionLine(string[] line, int lineId)
+        public FamilySection ParseFamilySectionLine(string[] line, int lineId, string sra)
         {
             int familySectionLineId = lineId;
             string family = line[0].Split(new char[] { '=' })[1];
@@ -228,9 +198,10 @@ namespace ParserNs
             int topAln = int.Parse(line[8].Split(new char[] { '=' })[1]);
             int topLen = int.Parse(line[9].Split(new char[] { '=' })[1]);
             string topName = line[10].Split(new char[] { '=' })[1];
-            FamilySections.Add(new FamilySection{
+            var familySection = new FamilySection
+            {
                 FamilySectionLineId = familySectionLineId,
-                Sra = Sra,
+                Sra = sra,
                 Family = family,
                 Score = score,
                 PctId = pctId,
@@ -242,10 +213,11 @@ namespace ParserNs
                 TopAln = topAln,
                 TopLen = topLen,
                 TopName = topName,
-            });
+            };
+            return familySection;
         }
 
-        public void ParseAccessionSectionLine(string[] line, int lineId)
+        public AccessionSection ParseAccessionSectionLine(string[] line, int lineId, string sra)
         {
             int accessionSectionLineId = lineId;
             string acc = line[0].Split(new char[] { '=' })[1];
@@ -258,11 +230,11 @@ namespace ParserNs
             string cvg = line[8].Split(new char[] { '=' })[1];
             string fam = line[9].Split(new char[] { '=' })[1];
             string name = line[10].Split(new char[] { '=' })[1];
-            AccessionSections.Add(new AccessionSection
+            var accessionSection = new AccessionSection
             {
                 AccessionSectionLineId = accessionSectionLineId,
                 Acc = acc,
-                Sra = Sra,
+                Sra = sra,
                 Fam = fam,
                 PctId = pctId,
                 Aln = aln,
@@ -272,34 +244,41 @@ namespace ParserNs
                 Depth = depth,
                 Cvg = cvg,
                 Name = name,
-            });
+            };
+            return accessionSection;
         }
 
-        public void ParseFamilySection()
+        public ParsedFile ParseFamilySection(ParsedFile partiallyParsedFileC, UnparsedFile unparsedFile)
         {
             int i = 1;
             string[] temp;
-            foreach (string line in FamilyLinesFromFile)
+            foreach (string line in unparsedFile.FamilyLinesFromFile)
             {
                 temp = line.Split(new char[] { ';' });
-                ParseFamilySectionLine(temp, i);
+                var familySection = ParseFamilySectionLine(temp, i, unparsedFile.Sra);
+                partiallyParsedFileC.FamilySections.Add(familySection);
                 i++;
             }
+            var partiallyParsedFileCF = partiallyParsedFileC;
+            return partiallyParsedFileCF;
         }
 
-        public void ParseAccessionSection()
+        public ParsedFile ParseAccessionSection(ParsedFile partiallyParsedFileCF, UnparsedFile unparsedFile)
         {
             int i = 1;
             string[] temp;
-            foreach (string line in AccessionLinesFromFile)
+            foreach (string line in unparsedFile.AccessionLinesFromFile)
             {
                 temp = line.Split(new char[] { ';' });
-                ParseAccessionSectionLine(temp, i);
+                var accessionSection = ParseAccessionSectionLine(temp, i, unparsedFile.Sra);
+                partiallyParsedFileCF.AccessionSections.Add(accessionSection);
                 i++;
             }
+            var partiallyParsedFileCFA = partiallyParsedFileCF;
+            return partiallyParsedFileCFA;
         }
 
-        public void ParseFastaSection()
+        public ParsedFile ParseFastaSection(ParsedFile partiallyParsedFileCFA, UnparsedFile unparsedFile)
         {
             bool first = true;
             bool second = false;
@@ -308,7 +287,7 @@ namespace ParserNs
             List<string> firstLine = new List<string>();
             List<string> secondLine = new List<string>();
             List<int> lineNumber = new List<int>();
-            foreach (string line in FastaLinesFromFile)
+            foreach (string line in unparsedFile.FastaLinesFromFile)
             {
                 if (first)
                 {
@@ -321,10 +300,10 @@ namespace ParserNs
                     lineNumber.Add(i);
                     i++;
                     first = !first;
-                    FastaSections.Add(new FastaSection
+                    partiallyParsedFileCFA.FastaSections.Add(new FastaSection
                     {
                         FastaSectionLineId = lineNumber[j],
-                        Sra = Sra,
+                        Sra = unparsedFile.Sra,
                         SequenceId = firstLine[j],
                         Sequence = secondLine[j]
                     });
@@ -332,6 +311,8 @@ namespace ParserNs
                 }
                 second = !second;
             }
+            var parsedFile = partiallyParsedFileCFA;
+            return parsedFile;
         }
     }
 }
