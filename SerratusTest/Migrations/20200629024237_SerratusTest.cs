@@ -30,8 +30,8 @@ namespace SerratusTest.Migrations
                     AccessionSectionId = table.Column<int>(nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     AccessionSectionLineId = table.Column<int>(nullable: false),
-                    Sra = table.Column<string>(nullable: true),
                     RunId = table.Column<int>(nullable: false),
+                    Sra = table.Column<string>(nullable: true),
                     Fam = table.Column<string>(nullable: true),
                     Acc = table.Column<string>(nullable: true),
                     PctId = table.Column<double>(nullable: false),
