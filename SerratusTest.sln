@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratusTest", "SerratusTest\SerratusTest.csproj", "{F773AD1A-A954-4177-817B-A865E798542B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserNs", "Parser\ParserNs.csproj", "{17165AE4-BEB1-4D7B-A259-4EFC3301EEB6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{F773AD1A-A954-4177-817B-A865E798542B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F773AD1A-A954-4177-817B-A865E798542B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F773AD1A-A954-4177-817B-A865E798542B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17165AE4-BEB1-4D7B-A259-4EFC3301EEB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17165AE4-BEB1-4D7B-A259-4EFC3301EEB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17165AE4-BEB1-4D7B-A259-4EFC3301EEB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17165AE4-BEB1-4D7B-A259-4EFC3301EEB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
