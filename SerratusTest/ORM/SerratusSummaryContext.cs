@@ -15,6 +15,6 @@ namespace SerratusTest.ORM
         public DbSet<FastaSection> FastaSections { get; set; }
         public object Configuration { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("host=localhost;database=SerratusTest;username=postgres;password=bandit");
+            => optionsBuilder.UseNpgsql(Helper.GetRDSConnectionString());
     }
 }

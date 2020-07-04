@@ -13,6 +13,7 @@ using System.Threading;
 using Amazon;
 using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace ParserNs
 {
@@ -110,6 +111,7 @@ namespace ParserNs
                     { 
                         using (var context = new SerratusSummaryContext())
                         {
+                            
                             var parserStopwatch = Stopwatch.StartNew();
                             var lines = responseBody.Split('\n');
                             var unparsedFile = ReadFile(lines);

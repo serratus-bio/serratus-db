@@ -30,6 +30,9 @@ namespace SerratusTest
             services.AddControllers();
             services.AddDbContext<SerratusSummaryContext>();
             services.AddScoped<ISerratusSummaryService, SerratusSummaryService>();
+            //var connectionString = Configuration.GetConnectionString("DartDatabase");
+            //services.AddDbContext<DartContext>(options =>
+            //    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

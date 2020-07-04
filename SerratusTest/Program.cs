@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,9 +35,10 @@ namespace SerratusTest
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            var tokenConfig = new TokenConfig();
-            ConfigurationBinder.Bind(configuration.GetSection("Tokens"), tokenConfig);
-            var parser = new Parser(tokenConfig.AccessToken, tokenConfig.SecretToken);
+            NameValueCollection appConfig = ConfigurationManager.AppSettings;
+            string access = appConfig["AccessToken"];
+            string secret = appConfig["SecretToken"];
+            var parser = new Parser(access, secret);
             parser.GetBucketsFromS3();
         }
 

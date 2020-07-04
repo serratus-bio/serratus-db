@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ParserNs
+namespace SerratusTest
 {
-    class TokenConfig
+    class DBConfig
     {
-        public string AccessToken { get; set; }
-        public string SecretToken { get; set; }
+        public string Host { get; set; }
+        public string Database { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }
