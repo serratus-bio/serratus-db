@@ -18,7 +18,10 @@ namespace SerratusTest
     {
         public static void Main(string[] args)
         {
-            RunParser();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+            var configuration = builder.Build();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -35,12 +38,10 @@ namespace SerratusTest
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
-            NameValueCollection appConfig = ConfigurationManager.AppSettings;
-            string access = appConfig["AccessToken"];
-            string secret = appConfig["SecretToken"];
-            var parser = new Parser(access, secret);
+            var tokenConfig = new TokenConfig();
+            ConfigurationBinder.Bind(configuration.GetSection("Tokens"), tokenConfig);
+            var parser = new Parser(tokenConfig.AccessToken, tokenConfig.SecretToken);
             parser.GetBucketsFromS3();
         }
-
     }
 }

@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:51041",
+      "applicationUrl": "https://localhost:44363",
       "sslPort": 44363
     }
   },
@@ -12,10 +12,11 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/runs/1",
+      "launchUrl": "api/runs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "nativeDebugging": false
     },
     "SerratusTest": {
       "commandName": "Project",

@@ -9,8 +9,8 @@ using SerratusTest.ORM;
 namespace SerratusTest.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200629182640_Serratus")]
-    partial class Serratus
+    [Migration("20200705203432_SerratusTest")]
+    partial class SerratusTest
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

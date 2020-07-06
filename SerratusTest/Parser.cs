@@ -34,12 +34,15 @@ namespace ParserNs
 
         public void GetBucketsFromS3()
         {
+
+            Console.WriteLine("Parser Started");
             var moreKeys = true;
             SummaryFiles = new List<string>();
             if ( ContinuationToken == "")
             {
                 S3Object obj = new S3Object();
                 AmazonS3Config config = new AmazonS3Config();
+                config.RegionEndpoint = RegionEndpoint.USEast1;
                 AmazonS3Client s3Client = new AmazonS3Client(
                         _accessKey,
                         _secretKey,
@@ -50,6 +53,7 @@ namespace ParserNs
                 var res = buckets.Result;
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
+                Console.WriteLine($"{SummaryFiles.Count}");
                 GetDataFromBucketList(moreKeys).Wait();
             }
             else
@@ -82,6 +86,7 @@ namespace ParserNs
 
         public async Task GetDataFromBucketList(bool moreKeys)
         {
+            Console.WriteLine($"get data from bucket started");
             AmazonS3Config config = new AmazonS3Config();
             AmazonS3Client s3Client = new AmazonS3Client(
                     _accessKey,
@@ -104,6 +109,7 @@ namespace ParserNs
                 using (var stream = result.ResponseStream)
                 using (var reader = new StreamReader(stream))
                 {
+                    Console.WriteLine($"file read");
                     var readerStopwatch = Stopwatch.StartNew();
                     responseBody = await reader.ReadToEndAsync();
                     //Console.WriteLine($"{readerStopwatch.ElapsedMilliseconds}");
@@ -116,11 +122,13 @@ namespace ParserNs
                             var lines = responseBody.Split('\n');
                             var unparsedFile = ReadFile(lines);
                             var finishedFile = ParseFile(fileName, unparsedFile);
+                            Console.WriteLine($"file parsed");
                             //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
                             var dbStopwatch = Stopwatch.StartNew();
                             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
                             context.Runs.Add(finishedFile.Run);
                             await context.SaveChangesAsync();
+                            Console.WriteLine($"file saved in db");
                             //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
                         }
                     });
@@ -128,6 +136,7 @@ namespace ParserNs
             }
             if (moreKeys == true)
             {
+                Console.WriteLine("getting more buckets");
                 GetBucketsFromS3();
             }
             else
