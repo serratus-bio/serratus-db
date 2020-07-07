@@ -26,6 +26,20 @@ The program connects to a database through use of a Helper.cs file that's only p
 > "RDS_HOSTNAME" = host name, i.e. the dns location of your RDS database
 
 
+- Parser 
+
+The parser.cs file contains a parser that reads, serially, all summary files from the s3 bucket lovelywater. The parser connects to aws via your Serratus AWS credentials provided in the appsetings.json in the form of a nested JSON object "Tokens"- 
+ 
+ {
+    "Tokens": 
+       {
+           "AccessToken": "whateveryouraccesstokenis",
+           "SecretToken": "donteversharethiswithanyone!!!"
+       }
+ }
+ 
+ The parser then grabs files in groups of 1000 to parse and add to the database you are connected to in the appsettings.json. 
+ 
 - API
 
 The web API in this program is essentially just the out-of-the-box ASP.NET web API template with custom controllers generated from our domain model. There is one controller for each section of the database (Runs, FamilySections, AccessionSections, and FastaSections) meaning that there are four controllers in total. The controllers come with the basic CRUD commands needed for any rudimentary operations. However, adding custom routes is as easy as following the format present in the controllor: defining the type of request, the desired return object, and the necessary part of the database needed to perform said operation. 
