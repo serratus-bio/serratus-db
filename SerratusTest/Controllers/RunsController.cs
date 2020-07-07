@@ -27,7 +27,19 @@ namespace SerratusTest.Controllers
         {
             return await _context.Runs.ToListAsync();
         }
-
+        
+        [HttpGet("get-run/{sra}")]
+        public async Task<ActionResult<Run>> GetSummary(string sra)
+        {
+            var run = await _context.Runs.FirstOrDefaultAsync(r => r.Sra == sra);
+            var family = await _context.FamilySections.Where(f => f.RunId == run.RunId).ToListAsync();
+            var accs = await _context.AccessionSections.Where(a => a.RunId == run.RunId).ToListAsync();
+            var fasta = await _context.FastaSections.Where(f => f.RunId == run.RunId).ToListAsync();
+            run.FamilySections = family;
+            run.AccessionSections = accs;
+            run.FastaSections = fasta;
+            return run;
+        }
         // GET: api/Runs/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Run>> GetRun(int id)
