@@ -35,8 +35,12 @@ To run the API, ensure that the only method called in the Main of the program fi
 
 # Endpoint Documentation
 
-> The endpoints for this api are present in the controller files for each part of the database's domain model. The four parts of the domain represent each of the 
+- The endpoints for this api are present in the controller files for each part of the database's domain model. The basic CRUD commands are all present in each file, along with plenty of room for customization.
 
-Example 1: Retrieving a nested JSON File with all summary file data
+Example 1: Retrieving all runs
+
+- The endpoint present in the run controller 'https://localhost:44363/api/runs/' will return a JSON file of all runs.
+
+Example 2: Retrieving a nested JSON File with all summary file data
 
 - The endpoint present in the run controller 'https://localhost:44363/api/runs/get-run/DRR000746' will return a nested JSON file representation of the summary file for the SRA 'DRR000746'.
