@@ -34,7 +34,6 @@ namespace ParserNs
 
         public void GetBucketsFromS3()
         {
-
             Console.WriteLine("Parser Started");
             var moreKeys = true;
             SummaryFiles = new List<string>();
@@ -104,35 +103,42 @@ namespace ParserNs
 
                 string responseBody = "";
                 var s3Stopwatch = Stopwatch.StartNew();
-                var result = await s3Client.GetObjectAsync(request);
-                //Console.WriteLine($"{s3Stopwatch.ElapsedMilliseconds}");
-                using (var stream = result.ResponseStream)
-                using (var reader = new StreamReader(stream))
+                
+                try
                 {
-                    Console.WriteLine($"file read");
-                    var readerStopwatch = Stopwatch.StartNew();
-                    responseBody = await reader.ReadToEndAsync();
-                    //Console.WriteLine($"{readerStopwatch.ElapsedMilliseconds}");
-                    _ = Task.Run(async () =>
-                    { 
-                        using (var context = new SerratusSummaryContext())
+                    var result =await s3Client.GetObjectAsync(request);
+                    using (var stream = result.ResponseStream)
+                    using (var reader = new StreamReader(stream))
+                    {
+                        Console.WriteLine($"file read");
+                        var readerStopwatch = Stopwatch.StartNew();
+                        responseBody = await reader.ReadToEndAsync();
+                        //Console.WriteLine($"{readerStopwatch.ElapsedMilliseconds}");
+                        _ = Task.Run(async () =>
                         {
-                            
-                            var parserStopwatch = Stopwatch.StartNew();
-                            var lines = responseBody.Split('\n');
-                            var unparsedFile = ReadFile(lines);
-                            var finishedFile = ParseFile(fileName, unparsedFile);
-                            Console.WriteLine($"file parsed");
-                            //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
-                            var dbStopwatch = Stopwatch.StartNew();
-                            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                            context.Runs.Add(finishedFile.Run);
-                            await context.SaveChangesAsync();
-                            Console.WriteLine($"file saved in db");
-                            //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
-                        }
-                    });
+                            using (var context = new SerratusSummaryContext())
+                            {
+                                var parserStopwatch = Stopwatch.StartNew();
+                                var lines = responseBody.Split('\n');
+                                var unparsedFile = ReadFile(lines);
+                                var finishedFile = ParseFile(fileName, unparsedFile);
+                                Console.WriteLine($"file parsed");
+                                //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
+                                var dbStopwatch = Stopwatch.StartNew();
+                                context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                                context.Runs.Add(finishedFile.Run);
+                                await context.SaveChangesAsync();
+                                Console.WriteLine($"file saved in db");
+                                //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
+                            }
+                        });
+                    }
                 }
+                catch
+                {
+                    continue;
+                }
+                //Console.WriteLine($"{s3Stopwatch.ElapsedMilliseconds}");
             }
             if (moreKeys == true)
             {

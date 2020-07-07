@@ -35,6 +35,13 @@ namespace SerratusTest.Controllers
             return await _context.AccessionSections.ToListAsync();
         }
 
+        [HttpGet("get-number-of-accs")]
+        public async Task<int> GetNumberOfAccessions()
+        {
+            var accs =  await _context.AccessionSections.ToListAsync();
+            var numberOfAccs = accs.Count;
+            return numberOfAccs;    
+        }
         // GET: api/AccessionSections/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AccessionSection>> GetAccessionSection(int id)

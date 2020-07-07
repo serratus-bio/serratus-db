@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ParserNs;
+using SerratusTest.Domain.Model;
 using SerratusTest.Services;
 
 namespace SerratusTest
@@ -18,10 +19,7 @@ namespace SerratusTest
     {
         public static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-            var configuration = builder.Build();
+            RunParser();
             CreateHostBuilder(args).Build().Run();
         }
 
