@@ -19,7 +19,6 @@ namespace SerratusTest
     {
         public static void Main(string[] args)
         {
-            RunParser();
             CreateHostBuilder(args).Build().Run();
         }
 
