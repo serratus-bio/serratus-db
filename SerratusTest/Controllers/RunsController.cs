@@ -32,9 +32,18 @@ namespace SerratusTest.Controllers
         public async Task<ActionResult<Run>> GetSummary(string sra)
         {
             var run = await _context.Runs.FirstOrDefaultAsync(r => r.Sra == sra);
-            var family = await _context.FamilySections.Where(f => f.RunId == run.RunId).ToListAsync();
-            var accs = await _context.AccessionSections.Where(a => a.RunId == run.RunId).ToListAsync();
-            var fasta = await _context.FastaSections.Where(f => f.RunId == run.RunId).ToListAsync();
+            var family = await _context.FamilySections
+                .Where(f => f.RunId == run.RunId)
+                .OrderBy(f => f.FamilySectionLineId)
+                .ToListAsync();
+            var accs = await _context.AccessionSections
+                .Where(a => a.RunId == run.RunId)
+                .OrderBy(a => a.AccessionSectionLineId)
+                .ToListAsync();
+            var fasta = await _context.FastaSections
+                .Where(f => f.RunId == run.RunId)
+                .OrderBy(f => f.FastaSectionLineId)
+                .ToListAsync();
             run.FamilySections = family;
             run.AccessionSections = accs;
             run.FastaSections = fasta;
