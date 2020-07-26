@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 
-namespace SerratusTest.Controllers
+namespace SerratusApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

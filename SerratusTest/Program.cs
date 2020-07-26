@@ -20,18 +20,7 @@ namespace SerratusTest
         public static void Main(string[] args)
         {
             RunParser();
-            CreateHostBuilder(args).Build().Run();
         }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    //webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
-                    //webBuilder.UseKestrel();
-                    //webBuilder.UseIISIntegration();
-                    webBuilder.UseStartup<Startup>();
-                });
 
         public static async void RunParser()
         {

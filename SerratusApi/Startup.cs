@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using SerratusTest.ORM;
 using SerratusTest.Services;
 
-namespace SerratusTest
+namespace SerratusApi
 {
     public class Startup
     {

@@ -9,7 +9,7 @@ using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
 
-namespace SerratusTest.Controllers
+namespace SerratusApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
