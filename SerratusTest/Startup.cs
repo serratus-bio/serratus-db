@@ -49,6 +49,8 @@ namespace SerratusTest
 
             app.UseAuthorization();
 
+            app.UseCors(builder => builder.AllowAnyOrigin().Build());
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

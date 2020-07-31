@@ -19,6 +19,7 @@ namespace SerratusTest
     {
         public static void Main(string[] args)
         {
+            RunParser();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -26,10 +27,13 @@ namespace SerratusTest
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    //webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
+                    //webBuilder.UseKestrel();
+                    //webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
                 });
 
-        public static void RunParser()
+        public static async void RunParser()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -38,7 +42,9 @@ namespace SerratusTest
             var tokenConfig = new TokenConfig();
             ConfigurationBinder.Bind(configuration.GetSection("Tokens"), tokenConfig);
             var parser = new Parser(tokenConfig.AccessToken, tokenConfig.SecretToken);
-            parser.GetBucketsFromS3();
+            //parser.GetBucketsFromS3();
+            await parser.GetDataFromBucketList();
+            Console.WriteLine("COMPLETE");
         }
     }
 }

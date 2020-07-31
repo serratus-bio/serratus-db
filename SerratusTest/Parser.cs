@@ -32,8 +32,33 @@ namespace ParserNs
             _secretKey = secretKey;
         }
 
+        static readonly string textfile = @"/home/ec2-user/Summary10.txt";
+
+        public List<string> FileOne { get; set; } = new List<string>();
+        public List<string> FileTwo { get; set; } = new List<string>();
+        public List<string> FileThree { get; set; } = new List<string>();
+        public List<string> FileFour { get; set; } = new List<string>();
+        public List<string> FileFive { get; set; } = new List<string>();
+        public List<string> FileSix { get; set; } = new List<string>();
+        public List<string> FileSeven { get; set; } = new List<string>();
+        public List<string> FileEight { get; set; } = new List<string>();
+        public List<string> FileNine { get; set; } = new List<string>();
+        public List<string> FileTen { get; set; } = new List<string>();
+
+        public List<string> ReadFile()
+        {
+            SummaryFiles = new List<string>();
+            var lines = File.ReadAllLines(textfile);
+            foreach (string line in lines)
+            {
+                SummaryFiles.Add(line);
+            }
+            Console.WriteLine("File read");
+            return SummaryFiles;
+        }
         public void GetBucketsFromS3()
         {
+
             Console.WriteLine("Parser Started");
             var moreKeys = true;
             SummaryFiles = new List<string>();
@@ -53,7 +78,7 @@ namespace ParserNs
                 ContinuationToken = res.NextContinuationToken;
                 res.S3Objects.ForEach(obj => SummaryFiles.Add(obj.Key));
                 Console.WriteLine($"{SummaryFiles.Count}");
-                GetDataFromBucketList(moreKeys).Wait();
+                //GetDataFromBucketList(moreKeys).Wait();
             }
             else
             {
@@ -73,18 +98,19 @@ namespace ParserNs
                 if (res.KeyCount < 1000)
                 {
                     moreKeys = false;
-                    GetDataFromBucketList(moreKeys).Wait();
+                    //GetDataFromBucketList(moreKeys).Wait();
                     return;
                 }
                 else
                 {
-                    GetDataFromBucketList(moreKeys).Wait();
+                    //GetDataFromBucketList(moreKeys).Wait();
                 }
             }
         }
 
-        public async Task GetDataFromBucketList(bool moreKeys)
+        public async Task GetDataFromBucketList()
         {
+            ReadFile();
             Console.WriteLine($"get data from bucket started");
             AmazonS3Config config = new AmazonS3Config();
             AmazonS3Client s3Client = new AmazonS3Client(
@@ -93,6 +119,7 @@ namespace ParserNs
                     config
                     );
             var oneFile = Stopwatch.StartNew();
+            var tasks = new List<Task>();
             foreach ( string fileName in SummaryFiles )
             {
                 var request = new GetObjectRequest
@@ -103,10 +130,10 @@ namespace ParserNs
 
                 string responseBody = "";
                 var s3Stopwatch = Stopwatch.StartNew();
-                
                 try
                 {
-                    var result =await s3Client.GetObjectAsync(request);
+                    Console.WriteLine("test");
+                    var result = await s3Client.GetObjectAsync(request);
                     using (var stream = result.ResponseStream)
                     using (var reader = new StreamReader(stream))
                     {
@@ -114,7 +141,7 @@ namespace ParserNs
                         var readerStopwatch = Stopwatch.StartNew();
                         responseBody = await reader.ReadToEndAsync();
                         //Console.WriteLine($"{readerStopwatch.ElapsedMilliseconds}");
-                        _ = Task.Run(async () =>
+                        var task = Task.Run(async () =>
                         {
                             using (var context = new SerratusSummaryContext())
                             {
@@ -132,23 +159,30 @@ namespace ParserNs
                                 //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
                             }
                         });
+                        tasks.Add(task);
                     }
                 }
                 catch
                 {
                     continue;
                 }
+                if (tasks.Count == 100)
+                {
+                    await Task.WhenAll(tasks);
+                    Console.WriteLine("tasks done!");
+                }
                 //Console.WriteLine($"{s3Stopwatch.ElapsedMilliseconds}");
             }
-            if (moreKeys == true)
-            {
-                Console.WriteLine("getting more buckets");
-                GetBucketsFromS3();
-            }
-            else
-            {
-                return;
-            }
+            Console.WriteLine("PARSER COMPLETE");
+            //if (moreKeys == true)
+            //{
+            //    Console.WriteLine("getting more buckets");
+            //    GetBucketsFromS3();
+            //}
+            //else
+            //{
+            //    return;
+            //}
         }
 
         public UnparsedFile ReadFile(string [] lines)

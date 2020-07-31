@@ -31,6 +31,7 @@ namespace SerratusTest.Controllers
         [HttpGet("get-run/{sra}")]
         public async Task<ActionResult<Run>> GetSummary(string sra)
         {
+
             var run = await _context.Runs.FirstOrDefaultAsync(r => r.Sra == sra);
             var family = await _context.FamilySections
                 .Where(f => f.RunId == run.RunId)
@@ -48,6 +49,33 @@ namespace SerratusTest.Controllers
             run.AccessionSections = accs;
             run.FastaSections = fasta;
             return run;
+        }
+
+        [HttpGet("get-runs/{accession}")]
+        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetRunsFromAccession(string accession, [FromQuery]int page)
+        {
+            var recordsPerPage = 10;
+            if (page == 0)
+            {
+                page = 1;
+            }
+            var accs = await _context.AccessionSections
+                .Where(a => a.Acc == accession)
+                .OrderByDescending(a => a.CvgPct)
+                .Skip((page - 1) * recordsPerPage)
+                .Take(recordsPerPage)
+                .ToListAsync();
+            return accs;
+        }
+        [HttpGet("get-runs-by-family/{family}")]
+        public async Task<ActionResult<IEnumerable<FamilySection>>> GetRunsFromFamily(string family)
+        {
+            var fams = await _context.FamilySections
+                .Where(f => f.Family == family)
+                .OrderByDescending(f => f.Score)
+                .Take(100)
+                .ToListAsync();
+            return fams;
         }
         // GET: api/Runs/5
         [HttpGet("{id}")]
