@@ -11,7 +11,7 @@ using SerratusTest.Services;
 
 namespace SerratusApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/family")]
     [ApiController]
     public class FamilySectionsController : ControllerBase
     {
@@ -23,16 +23,30 @@ namespace SerratusApi.Controllers
             _context = context;
             _serratusSummaryService = serratusSummaryService;
         }
+
         [HttpPost("create-family-section")]
         public void CreateEntry()
         {
             _serratusSummaryService.AddFamilySection();
         }
+
         // GET: api/FamilySections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FamilySection>>> GetFamilySections()
         {
             return await _context.FamilySections.ToListAsync();
+        }
+
+        [HttpGet("get-runs/{family}")]
+        public async Task<ActionResult<IEnumerable<FamilySection>>> GetRunsFromFamily(string family)
+        {
+            var families = await _context.FamilySections
+                .Where(f => f.Family == family)
+                .OrderByDescending(f => f.Score)
+                .Take(100)
+                .ToListAsync();
+
+            return families;
         }
 
         // GET: api/FamilySections/5

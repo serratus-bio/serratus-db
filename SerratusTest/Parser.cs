@@ -19,7 +19,6 @@ namespace ParserNs
 {
     public class Parser
     {
-        private readonly CancellationToken cancellationToken;
         private readonly string _accessKey;
         private readonly string _secretKey;
         
@@ -56,6 +55,7 @@ namespace ParserNs
             Console.WriteLine("File read");
             return SummaryFiles;
         }
+
         public void GetBucketsFromS3()
         {
 

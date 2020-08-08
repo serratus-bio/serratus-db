@@ -11,7 +11,7 @@ using SerratusTest.Services;
 
 namespace SerratusApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/genbank")]
     [ApiController]
     public class AccessionSectionsController : ControllerBase
     {
@@ -23,16 +23,37 @@ namespace SerratusApi.Controllers
             _context = context;
             _serratusSummaryService = serratusSummaryService;
         }
+
         [HttpPost("create-accession-entry")]
         public void CreateEntry()
         {
             _serratusSummaryService.AddAccessionSection();
         }
+
         // GET: api/AccessionSections
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AccessionSection>>> GetAccessionSections()
         {
             return await _context.AccessionSections.ToListAsync();
+        }
+
+        [HttpGet("get-runs/{genbank}")]
+        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page)
+        {
+            var recordsPerPage = 10;
+            if (page == 0)
+            {
+                page = 1;
+            }
+
+            var accs = await _context.AccessionSections
+                .Where(a => a.Acc == genbank)
+                .OrderByDescending(a => a.CvgPct)
+                .Skip((page - 1) * recordsPerPage)
+                .Take(recordsPerPage)
+                .ToListAsync();
+
+            return accs;
         }
 
         [HttpGet("get-number-of-accs")]
@@ -42,6 +63,7 @@ namespace SerratusApi.Controllers
             var numberOfAccs = accs.Count;
             return numberOfAccs;    
         }
+
         // GET: api/AccessionSections/5
         [HttpGet("{id}")]
         public async Task<ActionResult<AccessionSection>> GetAccessionSection(int id)
