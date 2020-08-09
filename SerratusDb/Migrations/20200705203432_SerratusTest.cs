@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-namespace SerratusTest.Migrations
+namespace SerratusDb.Migrations
 {
-    public partial class SerratusTest : Migration
+    public partial class SerratusDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -1,4 +1,4 @@
-﻿using SerratusTest.Domain.Model;
+﻿using SerratusDb.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;

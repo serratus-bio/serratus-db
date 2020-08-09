@@ -10,8 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using SerratusTest.ORM;
-using SerratusTest.Services;
+using SerratusDb.ORM;
+using SerratusDb.Services;
 
 namespace SerratusApi
 {

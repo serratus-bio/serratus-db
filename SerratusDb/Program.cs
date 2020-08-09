@@ -10,10 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ParserNs;
-using SerratusTest.Domain.Model;
-using SerratusTest.Services;
+using SerratusDb.Domain.Model;
+using SerratusDb.Services;
 
-namespace SerratusTest
+namespace SerratusDb
 {
     public class Program
     {

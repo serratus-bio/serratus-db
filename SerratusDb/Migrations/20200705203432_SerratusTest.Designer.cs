@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SerratusTest.ORM;
+using SerratusDb.ORM;
 
-namespace SerratusTest.Migrations
+namespace SerratusDb.Migrations
 {
     [DbContext(typeof(SerratusSummaryContext))]
-    [Migration("20200705203432_SerratusTest")]
-    partial class SerratusTest
+    [Migration("20200705203432_SerratusDb")]
+    partial class SerratusDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace SerratusTest.Migrations
                 .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.AccessionSection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.AccessionSection", b =>
                 {
                     b.Property<int>("AccessionSectionId")
                         .ValueGeneratedOnAdd()
@@ -73,7 +73,7 @@ namespace SerratusTest.Migrations
                     b.ToTable("AccessionSections");
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.FamilySection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.FamilySection", b =>
                 {
                     b.Property<int>("FamilySectionId")
                         .ValueGeneratedOnAdd()
@@ -129,7 +129,7 @@ namespace SerratusTest.Migrations
                     b.ToTable("FamilySections");
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.FastaSection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.FastaSection", b =>
                 {
                     b.Property<int>("FastaSectionId")
                         .ValueGeneratedOnAdd()
@@ -158,7 +158,7 @@ namespace SerratusTest.Migrations
                     b.ToTable("FastaSections");
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.Run", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.Run", b =>
                 {
                     b.Property<int>("RunId")
                         .ValueGeneratedOnAdd()
@@ -182,27 +182,27 @@ namespace SerratusTest.Migrations
                     b.ToTable("Runs");
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.AccessionSection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.AccessionSection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.Run", null)
+                    b.HasOne("SerratusDb.Domain.Model.Run", null)
                         .WithMany("AccessionSections")
                         .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.FamilySection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.FamilySection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.Run", null)
+                    b.HasOne("SerratusDb.Domain.Model.Run", null)
                         .WithMany("FamilySections")
                         .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SerratusTest.Domain.Model.FastaSection", b =>
+            modelBuilder.Entity("SerratusDb.Domain.Model.FastaSection", b =>
                 {
-                    b.HasOne("SerratusTest.Domain.Model.Run", null)
+                    b.HasOne("SerratusDb.Domain.Model.Run", null)
                         .WithMany("FastaSections")
                         .HasForeignKey("RunId")
                         .OnDelete(DeleteBehavior.Cascade)

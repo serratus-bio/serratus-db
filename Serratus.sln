@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratusTest", "SerratusTest\SerratusTest.csproj", "{F773AD1A-A954-4177-817B-A865E798542B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SerratusDb", "SerratusDb\SerratusDb.csproj", "{F773AD1A-A954-4177-817B-A865E798542B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerratusApi", "SerratusApi\SerratusApi.csproj", "{9419CF20-5803-463E-9E92-3040EDB7E8EF}"
 EndProject

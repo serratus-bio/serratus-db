@@ -21,7 +21,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\SerratusTest\SerratusTest.csproj">
+      <ProjectReference Include="..\SerratusDb\SerratusDb.csproj">
         <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
       </ProjectReference>
     </ItemGroup>

@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace SerratusTest
+namespace SerratusDb
 {
     public class Helper
     {

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SerratusTest.Domain.Model;
-using SerratusTest.ORM;
-using SerratusTest.Services;
+using SerratusDb.Domain.Model;
+using SerratusDb.Services;
 
 namespace SerratusApi.Controllers
 {
@@ -15,12 +11,10 @@ namespace SerratusApi.Controllers
     [ApiController]
     public class AccessionSectionsController : ControllerBase
     {
-        private readonly SerratusSummaryContext _context;
         private readonly ISerratusSummaryService _serratusSummaryService;
 
-        public AccessionSectionsController(SerratusSummaryContext context, ISerratusSummaryService serratusSummaryService)
+        public AccessionSectionsController(ISerratusSummaryService serratusSummaryService)
         {
-            _context = context;
             _serratusSummaryService = serratusSummaryService;
         }
 
@@ -30,37 +24,26 @@ namespace SerratusApi.Controllers
             _serratusSummaryService.AddAccessionSection();
         }
 
-        // GET: api/AccessionSections
+        // GET: api/genbank
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetAccessionSections()
+        public async Task<IEnumerable<AccessionSection>> GetAccessionSections()
         {
-            return await _context.AccessionSections.ToListAsync();
+            return await _serratusSummaryService.GetAccessionSections();
         }
 
+        // GET: api/genbank/get-runs/
         [HttpGet("get-runs/{genbank}")]
-        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page)
+        public async Task<IEnumerable<AccessionSection>> GetRunsFromAccession(string genbank, [FromQuery] int page)
         {
-            var recordsPerPage = 10;
-            if (page == 0)
-            {
-                page = 1;
-            }
-
-            var accs = await _context.AccessionSections
-                .Where(a => a.Acc == genbank)
-                .OrderByDescending(a => a.CvgPct)
-                .Skip((page - 1) * recordsPerPage)
-                .Take(recordsPerPage)
-                .ToListAsync();
-
-            return accs;
+            return await _serratusSummaryService.GetRunsFromAccession(genbank, page);
         }
 
+        // GET: api/genbank/get-number-of-accs
         [HttpGet("get-number-of-accs")]
         public async Task<int> GetNumberOfAccessions()
         {
-            var accs =  await _context.AccessionSections.ToListAsync();
-            var numberOfAccs = accs.Count;
+            var accs = await _serratusSummaryService.GetAccessionSections();
+            var numberOfAccs = accs.Count();
             return numberOfAccs;    
         }
 
@@ -68,7 +51,7 @@ namespace SerratusApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AccessionSection>> GetAccessionSection(int id)
         {
-            var accessionSection = await _context.AccessionSections.FindAsync(id);
+            var accessionSection = await _serratusSummaryService.GetAccessionSection(id);
 
             if (accessionSection == null)
             {
@@ -76,71 +59,6 @@ namespace SerratusApi.Controllers
             }
 
             return accessionSection;
-        }
-
-        // PUT: api/AccessionSections/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAccessionSection(int id, AccessionSection accessionSection)
-        {
-            if (id != accessionSection.AccessionSectionId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(accessionSection).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccessionSectionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/AccessionSections
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<AccessionSection>> PostAccessionSection(AccessionSection accessionSection)
-        {
-            _context.AccessionSections.Add(accessionSection);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAccessionSection", new { id = accessionSection.AccessionSectionId }, accessionSection);
-        }
-
-        // DELETE: api/AccessionSections/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<AccessionSection>> DeleteAccessionSection(int id)
-        {
-            var accessionSection = await _context.AccessionSections.FindAsync(id);
-            if (accessionSection == null)
-            {
-                return NotFound();
-            }
-
-            _context.AccessionSections.Remove(accessionSection);
-            await _context.SaveChangesAsync();
-
-            return accessionSection;
-        }
-
-        private bool AccessionSectionExists(int id)
-        {
-            return _context.AccessionSections.Any(e => e.AccessionSectionId == id);
         }
     }
 }

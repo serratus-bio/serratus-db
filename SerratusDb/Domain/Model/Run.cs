@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SerratusTest.Domain.Model
+namespace SerratusDb.Domain.Model
 {
     public class Run
     {
