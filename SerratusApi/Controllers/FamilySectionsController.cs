@@ -33,9 +33,9 @@ namespace SerratusApi.Controllers
 
         // GET: api/family/get-runs/Coronaviridae
         [HttpGet("get-runs/{family}")]
-        public async Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family)
+        public async Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family, [FromQuery] int page)
         {
-            return await _serratusSummaryService.GetRunsFromFamily(family);
+            return await _serratusSummaryService.GetRunsFromFamily(family, page);
         }
 
         // GET: api/family/5

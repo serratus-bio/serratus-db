@@ -148,15 +148,23 @@ namespace SerratusDb.Services
             _context.SaveChanges();
         }
 
-        public async Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family)
+        public async Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family, int page)
         {
+            var recordsPerPage = 10;
+
+            if (page == 0)
+            {
+                page = 1;
+            }
+
             using var context = _context;
 
             var families = context.FamilySections
-            .Where(f => f.Family == family)
-            .OrderByDescending(f => f.Score)
-            .Take(100)
-            .ToListAsync();
+                .Where(f => f.Family == family)
+                .OrderByDescending(f => f.Score)
+                .Skip((page - 1) * recordsPerPage)
+                .Take(recordsPerPage)
+                .ToListAsync();
 
             return await families;
         }

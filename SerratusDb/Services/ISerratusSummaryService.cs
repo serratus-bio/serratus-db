@@ -24,7 +24,7 @@ namespace SerratusDb.Services
         // Family
         void AddFamilySection();
 
-        Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family);
+        Task<IEnumerable<FamilySection>> GetRunsFromFamily(string family, int page);
 
         Task<IEnumerable<FamilySection>> GetFamilySections();
 
