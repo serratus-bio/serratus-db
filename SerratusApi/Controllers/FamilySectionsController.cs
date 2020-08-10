@@ -38,12 +38,18 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{family}")]
-        public async Task<ActionResult<IEnumerable<FamilySection>>> GetRunsFromFamily(string family)
+        public async Task<ActionResult<IEnumerable<FamilySection>>> GetRunsFromFamily(string family, [FromQuery] int page)
         {
+            var recordsPerPage = 10;
+            if (page == 0)
+            {
+                page = 1;
+            }
             var families = await _context.FamilySections
                 .Where(f => f.Family == family)
                 .OrderByDescending(f => f.Score)
-                .Take(100)
+                .Skip((page - 1) * recordsPerPage)
+                .Take(recordsPerPage)
                 .ToListAsync();
 
             return families;
