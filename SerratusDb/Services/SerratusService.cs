@@ -7,11 +7,11 @@ using SerratusDb.ORM;
 
 namespace SerratusDb.Services
 {
-    public class SerratusSummaryService : ISerratusSummaryService
+    public class SerratusService : ISerratusService
     {
         private readonly SerratusSummaryContext _context;
 
-        public SerratusSummaryService(SerratusSummaryContext serratusSummaryContext)
+        public SerratusService(SerratusSummaryContext serratusSummaryContext)
         {
             _context = serratusSummaryContext;
         }

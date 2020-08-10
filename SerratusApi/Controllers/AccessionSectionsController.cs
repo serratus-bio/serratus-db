@@ -11,38 +11,38 @@ namespace SerratusApi.Controllers
     [ApiController]
     public class AccessionSectionsController : ControllerBase
     {
-        private readonly ISerratusSummaryService _serratusSummaryService;
+        private readonly ISerratusService _service;
 
-        public AccessionSectionsController(ISerratusSummaryService serratusSummaryService)
+        public AccessionSectionsController(ISerratusService serratusSummaryService)
         {
-            _serratusSummaryService = serratusSummaryService;
+            _service = serratusSummaryService;
         }
 
         [HttpPost("create-accession-entry")]
         public void CreateEntry()
         {
-            _serratusSummaryService.AddAccessionSection();
+            _service.AddAccessionSection();
         }
 
         // GET: api/genbank
         [HttpGet]
         public async Task<IEnumerable<AccessionSection>> GetAccessionSections()
         {
-            return await _serratusSummaryService.GetAccessionSections();
+            return await _service.GetAccessionSections();
         }
 
         // GET: api/genbank/get-runs/
         [HttpGet("get-runs/{genbank}")]
         public async Task<IEnumerable<AccessionSection>> GetRunsFromAccession(string genbank, [FromQuery] int page)
         {
-            return await _serratusSummaryService.GetRunsFromAccession(genbank, page);
+            return await _service.GetRunsFromAccession(genbank, page);
         }
 
         // GET: api/genbank/get-number-of-accs
         [HttpGet("get-number-of-accs")]
         public async Task<int> GetNumberOfAccessions()
         {
-            var accs = await _serratusSummaryService.GetAccessionSections();
+            var accs = await _service.GetAccessionSections();
             var numberOfAccs = accs.Count();
             return numberOfAccs;    
         }
@@ -51,7 +51,7 @@ namespace SerratusApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<AccessionSection>> GetAccessionSection(int id)
         {
-            var accessionSection = await _serratusSummaryService.GetAccessionSection(id);
+            var accessionSection = await _service.GetAccessionSection(id);
 
             if (accessionSection == null)
             {

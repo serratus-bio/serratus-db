@@ -10,32 +10,32 @@ namespace SerratusApi.Controllers
     [ApiController]
     public class RunsController : ControllerBase
     {
-        private readonly ISerratusSummaryService _serratusSummaryService;
+        private readonly ISerratusService _service;
 
-        public RunsController(SerratusSummaryService serratusSummaryService)
+        public RunsController(ISerratusService serratusSummaryService)
         {
-            _serratusSummaryService = serratusSummaryService;
+            _service = serratusSummaryService;
         }
 
         // GET: api/run
         [HttpGet]
         public async Task<IEnumerable<Run>> GetRuns()
         {
-            return await _serratusSummaryService.GetRuns();
+            return await _service.GetRuns();
         }
 
-        // GET: api/run/get-run/
+        // GET: api/run/get-run/ERR2756788
         [HttpGet("get-run/{run}")]
         public async Task<Run> GetSummaryForSraAccession(string run)
         {
-            return await _serratusSummaryService.GetSummaryForSraAccession(run);
+            return await _service.GetSummaryForSraAccession(run);
         }
 
         // GET: api/run/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Run>> GetRun(int id)
         {
-            var run = await _serratusSummaryService.GetRun(id);
+            var run = await _service.GetRun(id);
 
             if (run == null)
             {

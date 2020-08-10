@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SerratusDb.Domain.Model;
-using SerratusDb.ORM;
+using SerratusDb.Services;
 
 namespace SerratusApi.Controllers
 {
@@ -11,25 +11,25 @@ namespace SerratusApi.Controllers
     [ApiController]
     public class FastaSectionsController : ControllerBase
     {
-        private readonly SerratusSummaryContext _context;
+        private readonly ISerratusService _service;
 
-        public FastaSectionsController(SerratusSummaryContext context)
+        public FastaSectionsController(ISerratusService serratusSummaryService)
         {
-            _context = context;
+            _service = serratusSummaryService;
         }
 
         // GET: api/FastaSections
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FastaSection>>> GetFastaSections()
+        public async Task<IEnumerable<FastaSection>> GetFastaSections()
         {
-            return await _context.FastaSections.ToListAsync();
+            return await _service.GetFastaSections();
         }
 
         // GET: api/FastaSections/5
         [HttpGet("{id}")]
         public async Task<ActionResult<FastaSection>> GetFastaSection(int id)
         {
-            var fastaSection = await _context.FastaSections.FindAsync(id);
+            var fastaSection = await _service.GetFastaSection(id);
 
             if (fastaSection == null)
             {

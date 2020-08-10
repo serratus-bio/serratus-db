@@ -4,7 +4,7 @@ using SerratusDb.Domain.Model;
 
 namespace SerratusDb.Services
 {
-    public interface ISerratusSummaryService
+    public interface ISerratusService
     {
         // Runs
         void AddRun();
