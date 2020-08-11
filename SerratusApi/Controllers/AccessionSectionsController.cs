@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SerratusApi.Model;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
@@ -38,22 +39,31 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{genbank}")]
-        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page)
+        public async Task<ActionResult<PaginatedResult>> GetRunsFromAccession(string genbank, [FromQuery] int page)
         {
-            var recordsPerPage = 10;
+            var recordsPerPage = 20;
             if (page == 0)
             {
                 page = 1;
             }
+            var totalResults = await _context.AccessionSections
+                .Where(a => a.Acc == genbank)
+                .OrderByDescending(a => a.CvgPct)
+                .CountAsync();
 
+            var numPages = totalResults / 20;
             var accs = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
                 .Skip((page - 1) * recordsPerPage)
                 .Take(recordsPerPage)
                 .ToListAsync();
-
-            return accs;
+            var paginatedResult = new PaginatedResult
+            {
+                AccessionSections = accs,
+                NumberOfPages = numPages
+            };
+            return paginatedResult;
         }
 
         [HttpGet("get-number-of-accs")]
