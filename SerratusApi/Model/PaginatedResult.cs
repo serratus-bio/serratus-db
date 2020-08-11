@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace SerratusApi.Model
 {
-    public class PaginatedResult
+    public class PaginatedResult<T>
     {
-        public IEnumerable<AccessionSection> AccessionSections { get; set; }
-        public IEnumerable<FamilySection> FamilySections { get; set; }
+        public IEnumerable<T> Items { get; set; }
         public int NumberOfPages { get; set; }
     }
 }
