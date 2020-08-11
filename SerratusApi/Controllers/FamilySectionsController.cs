@@ -40,24 +40,25 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{family}")]
-        public async Task<ActionResult<PaginatedResult>> GetRunsFromFamily(string family, [FromQuery] int page)
-        {
-            var recordsPerPage = 20;
+        public async Task<ActionResult<PaginatedResult<FamilySection>>> GetRunsFromFamily(string family, [FromQuery] int page, [FromQuery] int itemsPerPage)
+        { 
             var totalResults = await _context.FamilySections
                 .Where(f => f.Family == family)
                 .OrderByDescending(f => f.Score)
                 .CountAsync();
-            var numPages = totalResults / 20;
+
+            var numPages = totalResults / itemsPerPage;
+
             var families = await _context.FamilySections
                 .Where(f => f.Family == family)
                 .OrderByDescending(f => f.Score)
-                .Skip((page - 1) * recordsPerPage)
-                .Take(recordsPerPage)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
                 .ToListAsync();
 
-            var paginatedResult = new PaginatedResult
+            var paginatedResult = new PaginatedResult<FamilySection>
             {
-                FamilySections = families,
+                Items = families,
                 NumberOfPages = numPages
             };
             return paginatedResult;

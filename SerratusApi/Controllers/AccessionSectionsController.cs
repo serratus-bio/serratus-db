@@ -39,23 +39,25 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{genbank}")]
-        public async Task<ActionResult<PaginatedResult>> GetRunsFromAccession(string genbank, [FromQuery] int page)
+        public async Task<ActionResult<PaginatedResult<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page, [FromQuery] int itemsPerPage)
         {
-            var recordsPerPage = 20;
             var totalResults = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
                 .CountAsync();
-            var numPages = totalResults / 20;
+
+            var numPages = totalResults / itemsPerPage;
+
             var accs = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
-                .Skip((page - 1) * recordsPerPage)
-                .Take(recordsPerPage)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
                 .ToListAsync();
-            var paginatedResult = new PaginatedResult
+
+            var paginatedResult = new PaginatedResult<AccessionSection>
             {
-                AccessionSections = accs,
+                Items = accs,
                 NumberOfPages = numPages
             };
             return paginatedResult;
