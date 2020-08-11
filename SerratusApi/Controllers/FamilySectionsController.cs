@@ -51,7 +51,6 @@ namespace SerratusApi.Controllers
                 .Where(f => f.Family == family)
                 .OrderByDescending(f => f.Score)
                 .CountAsync();
-
             var numPages = totalResults / 20;
             var families = await _context.FamilySections
                 .Where(f => f.Family == family)

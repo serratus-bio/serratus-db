@@ -50,7 +50,6 @@ namespace SerratusApi.Controllers
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
                 .CountAsync();
-
             var numPages = totalResults / 20;
             var accs = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
