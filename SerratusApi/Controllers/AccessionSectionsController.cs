@@ -41,12 +41,20 @@ namespace SerratusApi.Controllers
         [HttpGet("get-runs/{genbank}")]
         public async Task<ActionResult<PaginatedResult<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page, [FromQuery] int itemsPerPage)
         {
+            int numPages;
             var totalResults = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
                 .CountAsync();
 
-            var numPages = totalResults / itemsPerPage;
+            if (totalResults % itemsPerPage != 0)
+            {
+                numPages = (totalResults / itemsPerPage) + 1;
+            } 
+            else
+            {
+                numPages = totalResults / itemsPerPage;
+            }
 
             var accs = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
