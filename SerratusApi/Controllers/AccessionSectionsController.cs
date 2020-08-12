@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SerratusApi.Model;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
@@ -38,22 +39,36 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{genbank}")]
-        public async Task<ActionResult<IEnumerable<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page)
+        public async Task<ActionResult<PaginatedResult<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page, [FromQuery] int itemsPerPage)
         {
-            var recordsPerPage = 10;
-            if (page == 0)
+            int numPages;
+            var totalResults = await _context.AccessionSections
+                .Where(a => a.Acc == genbank)
+                .OrderByDescending(a => a.CvgPct)
+                .CountAsync();
+
+            if (totalResults % itemsPerPage != 0)
             {
-                page = 1;
+                numPages = (totalResults / itemsPerPage) + 1;
+            } 
+            else
+            {
+                numPages = totalResults / itemsPerPage;
             }
 
             var accs = await _context.AccessionSections
                 .Where(a => a.Acc == genbank)
                 .OrderByDescending(a => a.CvgPct)
-                .Skip((page - 1) * recordsPerPage)
-                .Take(recordsPerPage)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
                 .ToListAsync();
 
-            return accs;
+            var paginatedResult = new PaginatedResult<AccessionSection>
+            {
+                Items = accs,
+                NumberOfPages = numPages
+            };
+            return paginatedResult;
         }
 
         [HttpGet("get-number-of-accs")]

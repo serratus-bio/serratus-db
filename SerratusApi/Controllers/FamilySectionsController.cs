@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SerratusApi.Model;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
@@ -12,6 +13,7 @@ using SerratusTest.Services;
 namespace SerratusApi.Controllers
 {
     [Route("api/family")]
+
     [ApiController]
     public class FamilySectionsController : ControllerBase
     {
@@ -38,15 +40,36 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{family}")]
-        public async Task<ActionResult<IEnumerable<FamilySection>>> GetRunsFromFamily(string family)
+        public async Task<ActionResult<PaginatedResult<FamilySection>>> GetRunsFromFamily(string family, [FromQuery] int page, [FromQuery] int itemsPerPage)
         {
+            int numPages;
+            var totalResults = await _context.FamilySections
+                .Where(f => f.Family == family)
+                .OrderByDescending(f => f.Score)
+                .CountAsync();
+
+            if (totalResults % itemsPerPage != 0)
+            {
+                numPages = (totalResults / itemsPerPage) + 1;
+            }
+            else
+            {
+                numPages = totalResults / itemsPerPage;
+            }
+
             var families = await _context.FamilySections
                 .Where(f => f.Family == family)
                 .OrderByDescending(f => f.Score)
-                .Take(100)
+                .Skip((page - 1) * itemsPerPage)
+                .Take(itemsPerPage)
                 .ToListAsync();
 
-            return families;
+            var paginatedResult = new PaginatedResult<FamilySection>
+            {
+                Items = families,
+                NumberOfPages = numPages
+            };
+            return paginatedResult;
         }
 
         // GET: api/FamilySections/5
