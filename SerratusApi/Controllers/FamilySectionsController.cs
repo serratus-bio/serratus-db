@@ -9,6 +9,7 @@ using SerratusApi.Model;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
+using Utilities = SerratusApi.Utills.Utills;
 
 namespace SerratusApi.Controllers
 {
@@ -40,36 +41,53 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{family}")]
-        public async Task<ActionResult<PaginatedResult<FamilySection>>> GetRunsFromFamily(string family, [FromQuery] int page, [FromQuery] int itemsPerPage)
+        public async Task<ActionResult<PaginatedResult<FamilySection>>> GetRunsFromFamily(string family,
+            [FromQuery] int page,
+            [FromQuery] int itemsPerPage,
+            [FromQuery] string pctId, // [int-int]
+            [FromQuery] string score)
         {
-            int numPages;
-            var totalResults = await _context.FamilySections
-                .Where(f => f.Family == family)
-                .OrderByDescending(f => f.Score)
-                .CountAsync();
-
-            if (totalResults % itemsPerPage != 0)
+            try
             {
-                numPages = (totalResults / itemsPerPage) + 1;
+                (int low, int high) pctIdLimits = Utilities.parseQueryParameterRange(pctId);
+                (int low, int high) scoreLimits = Utilities.parseQueryParameterRange(score);
+
+                int numPages;
+                var totalResults = await _context.FamilySections
+                    .Where(f => f.Family == family)
+                    .OrderByDescending(f => f.Score)
+                    .CountAsync();
+
+                if (totalResults % itemsPerPage != 0)
+                {
+                    numPages = (totalResults / itemsPerPage) + 1;
+                }
+                else
+                {
+                    numPages = totalResults / itemsPerPage;
+                }
+
+                var families = await _context.FamilySections
+                    .Where(f => f.Family == family
+                        && (f.PctId > pctIdLimits.low && f.PctId < pctIdLimits.high)
+                        && (f.Score > scoreLimits.low && f.Score < scoreLimits.high)
+                    )
+                    .OrderByDescending(f => f.Score)
+                    .Skip((page - 1) * itemsPerPage)
+                    .Take(itemsPerPage)
+                    .ToListAsync();
+
+                var paginatedResult = new PaginatedResult<FamilySection>
+                {
+                    Items = families,
+                    NumberOfPages = numPages
+                };
+                return paginatedResult;
             }
-            else
+            catch (ArgumentException)
             {
-                numPages = totalResults / itemsPerPage;
+                return BadRequest();
             }
-
-            var families = await _context.FamilySections
-                .Where(f => f.Family == family)
-                .OrderByDescending(f => f.Score)
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage)
-                .ToListAsync();
-
-            var paginatedResult = new PaginatedResult<FamilySection>
-            {
-                Items = families,
-                NumberOfPages = numPages
-            };
-            return paginatedResult;
         }
 
         // GET: api/FamilySections/5

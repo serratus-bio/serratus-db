@@ -9,6 +9,7 @@ using SerratusApi.Model;
 using SerratusTest.Domain.Model;
 using SerratusTest.ORM;
 using SerratusTest.Services;
+using Utilities = SerratusApi.Utills.Utills;
 
 namespace SerratusApi.Controllers
 {
@@ -39,36 +40,53 @@ namespace SerratusApi.Controllers
         }
 
         [HttpGet("get-runs/{genbank}")]
-        public async Task<ActionResult<PaginatedResult<AccessionSection>>> GetRunsFromAccession(string genbank, [FromQuery] int page, [FromQuery] int itemsPerPage)
+        public async Task<ActionResult<PaginatedResult<AccessionSection>>> GetRunsFromAccession(string genbank,
+            [FromQuery] int page,
+            [FromQuery] int itemsPerPage,
+            [FromQuery] string pctId, // [int-int]
+            [FromQuery] string cvgPct)
         {
-            int numPages;
-            var totalResults = await _context.AccessionSections
-                .Where(a => a.Acc == genbank)
-                .OrderByDescending(a => a.CvgPct)
-                .CountAsync();
+            try
+            {
+                (int low, int high) pctIdLimits = Utilities.parseQueryParameterRange(pctId);
+                (int low, int high) cvgPctLimits = Utilities.parseQueryParameterRange(cvgPct);
 
-            if (totalResults % itemsPerPage != 0)
-            {
-                numPages = (totalResults / itemsPerPage) + 1;
-            } 
-            else
-            {
-                numPages = totalResults / itemsPerPage;
+                int numPages;
+                var totalResults = await _context.AccessionSections
+                    .Where(a => a.Acc == genbank)
+                    .OrderByDescending(a => a.CvgPct)
+                    .CountAsync();
+
+                if (totalResults % itemsPerPage != 0)
+                {
+                    numPages = (totalResults / itemsPerPage) + 1;
+                }
+                else
+                {
+                    numPages = totalResults / itemsPerPage;
+                }
+
+                var accs = await _context.AccessionSections
+                    .Where(a => a.Acc == genbank
+                        && (a.PctId > pctIdLimits.low && a.PctId < pctIdLimits.high)
+                        && (a.CvgPct > cvgPctLimits.low && a.CvgPct < cvgPctLimits.high)
+                    )
+                    .OrderByDescending(a => a.CvgPct)
+                    .Skip((page - 1) * itemsPerPage)
+                    .Take(itemsPerPage)
+                    .ToListAsync();
+
+                var paginatedResult = new PaginatedResult<AccessionSection>
+                {
+                    Items = accs,
+                    NumberOfPages = numPages
+                };
+                return paginatedResult;
             }
-
-            var accs = await _context.AccessionSections
-                .Where(a => a.Acc == genbank)
-                .OrderByDescending(a => a.CvgPct)
-                .Skip((page - 1) * itemsPerPage)
-                .Take(itemsPerPage)
-                .ToListAsync();
-
-            var paginatedResult = new PaginatedResult<AccessionSection>
+            catch (ArgumentException)
             {
-                Items = accs,
-                NumberOfPages = numPages
-            };
-            return paginatedResult;
+                return BadRequest();
+            }
         }
 
         [HttpGet("get-number-of-accs")]
