@@ -7,9 +7,8 @@ namespace ParserNs
 {
     public class ParsedFile
     {
-        public Run Run { get; set; } = new Run();
-        public List<FamilySection> FamilySections { get; set; } = new List<FamilySection>();
-        public List<AccessionSection> AccessionSections { get; set; } = new List<AccessionSection>();
-        public List<FastaSection> FastaSections { get; set; } = new List<FastaSection>();
+        public Run run { get; set; } = new Run();
+        public List<Family> family { get; set; } = new List<Family>();
+        public List<Sequence> sequence { get; set; } = new List<Sequence>();
     }
 }
