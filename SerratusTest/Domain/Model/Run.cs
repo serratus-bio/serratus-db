@@ -7,13 +7,14 @@ namespace SerratusTest.Domain.Model
 {
     public class Run
     {
-        public int RunId { get; set; }
-        public string Sra { get; set; }
-        public string FileName { get; set; }
-        public string Genome { get; set; }
-        public string Date { get; set; }
-        public IList<FamilySection> FamilySections { get; set; }
-        public IList<AccessionSection> AccessionSections { get; set; }
-        public IList<FastaSection> FastaSections { get; set; }
+        public int run_id { get; set; }
+        public string file_name { get; set; }
+        public string sra_id { get; set; }
+        public string date { get; set; }
+        public string version { get; set; }
+        public string genome { get; set; }
+        public string read_length { get; set; }
+        public IList<Family> family { get; set; }
+        public IList<Sequence> sequence { get; set; }
     }
 }
