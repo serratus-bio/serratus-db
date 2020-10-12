@@ -6,10 +6,9 @@ namespace ParserNs
 {
     public class UnparsedFile
     {
-        public string CommentLineFromFile { get; set; } = "";
         public string Sra { get; set; } = "";
+        public string CommentLineFromFile { get; set; } = "";
         public List<string> FamilyLinesFromFile { get; set; } = new List<string>();
-        public List<string> AccessionLinesFromFile { get; set; } = new List<string>();
-        public List<string> FastaLinesFromFile { get; set; } = new List<string>();
+        public List<string> SequenceLinesFromFile { get; set; } = new List<string>();
     }
 }
