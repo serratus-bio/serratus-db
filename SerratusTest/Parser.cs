@@ -153,7 +153,7 @@ namespace ParserNs
                                 //Console.WriteLine($"{parserStopwatch.ElapsedMilliseconds}");
                                 var dbStopwatch = Stopwatch.StartNew();
                                 context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                                context.Runs.Add(finishedFile.Run);
+                                context.run.Add(finishedFile.run);
                                 await context.SaveChangesAsync();
                                 Console.WriteLine($"file saved in db");
                                 //Console.WriteLine($"{dbStopwatch.ElapsedMilliseconds}");
@@ -190,10 +190,18 @@ namespace ParserNs
             var unparsedFile = new UnparsedFile();
             foreach (string line in lines)
             {
-                if (line.StartsWith("S")) unparsedFile.CommentLineFromFile = line;
-                else if (line.StartsWith("f")) unparsedFile.FamilyLinesFromFile.Add(line);
-                else if (line.StartsWith("a")) unparsedFile.AccessionLinesFromFile.Add(line);
-                else if (line.StartsWith(">") || line.StartsWith("A") || line.StartsWith("T") || line.StartsWith("C") || line.StartsWith("G")) unparsedFile.FastaLinesFromFile.Add(line);
+                if (line.StartsWith("r"))
+                {
+                    unparsedFile.CommentLineFromFile = line;
+                }
+                else if (line.StartsWith("f"))
+                {
+                    unparsedFile.FamilyLinesFromFile.Add(line);
+                } 
+                else if (line.StartsWith("s"))
+                {
+                    unparsedFile.SequenceLinesFromFile.Add(line);
+                }
             }
             return unparsedFile;
         }
@@ -211,58 +219,65 @@ namespace ParserNs
         public ParsedFile CreateDbEntry(ParsedFile parsedFile)
         {
             var finishedFile = parsedFile;
-            finishedFile.Run.AccessionSections = parsedFile.AccessionSections;
-            finishedFile.Run.FamilySections = parsedFile.FamilySections;
-            finishedFile.Run.FastaSections = parsedFile.FastaSections;
+            finishedFile.run.family = parsedFile.family;
+            finishedFile.run.sequence = parsedFile.sequence;
             return finishedFile;
         }
 
         public ParsedFile ParseCommentLine(string fileName, UnparsedFile unparsedFile)
         {
             string[] split = unparsedFile.CommentLineFromFile.Split(new char[] { ',' });
-            string[] sra = split[0].Split(new char[] { '=' });
-            string[] gen = split[1].Split(new char[] { '=' });
-            string[] date = split[2].Split(new char[] { '=' });
-            unparsedFile.Sra = sra[2];
-            var run = new Run();
-            run.FileName = fileName;
-            run.Sra = sra[2];
-            run.Genome = gen[1];
-            run.Date = date[1];
-            var partiallyParsedFile = new ParsedFile();
-            partiallyParsedFile.Run = run;
+            string[] sra = split[0].Split(new char[] { '=', ';' });
+            string[] genome = split[1].Split(new char[] { '=' });
+            string[] version = split[2].Split(new char[] { '=' });
+            string[] date = split[3].Split(new char[] { '=' });
+            unparsedFile.Sra = sra[4];
+            var run = new Run
+            {
+                file_name = fileName,
+                sra_id = sra[4],
+                genome = genome[1],
+                version = version[1],
+                date = date[1]
+            };
+            var partiallyParsedFile = new ParsedFile
+            {
+                run = run
+            };
             return partiallyParsedFile;
         }
         
-        public FamilySection ParseFamilySectionLine(string[] line, int lineId, string sra)
+        public Family ParseFamilySectionLine(string[] line, int line_number, string sra)
         {
-            int familySectionLineId = lineId;
-            string family = line[0].Split(new char[] { '=' })[1];
-            int score = int.Parse(line[1].Split(new char[] { '=' })[1]);
-            int pctId = int.Parse(line[2].Split(new char[] { '=' })[1]);
-            int aln = int.Parse(line[3].Split(new char[] { '=' })[1]);
-            int glb = int.Parse(line[4].Split(new char[] { '=' })[1]);
-            int panLen = int.Parse(line[5].Split(new char[] { '=' })[1]);
-            string cvg = line[6].Split(new char[] { '=' })[1];
-            string top = line[7].Split(new char[] { '=' })[1];
-            int topAln = int.Parse(line[8].Split(new char[] { '=' })[1]);
-            int topLen = int.Parse(line[9].Split(new char[] { '=' })[1]);
-            string topName = line[10].Split(new char[] { '=' })[1];
-            var familySection = new FamilySection
+            int family_line = line_number;
+            string family_name = line[1].Split(new char[] { '=' })[1];
+            int score = int.Parse(line[2].Split(new char[] { '=' })[1]);
+            int percent_identity = int.Parse(line[3].Split(new char[] { '=' })[1]);
+            string coverage_bins = line[0].Split(new char[] { '=' })[1];
+            int n_reads = int.Parse(line[5].Split(new char[] { '=' })[1]);
+            int n_global_reads = int.Parse(line[6].Split(new char[] { '=' })[1]);
+            int length = int.Parse(line[7].Split(new char[] { '=' })[1]);
+            double depth = double.Parse(line[4].Split(new char[] { '=' })[1]);
+            string top_genbank_id = line[8].Split(new char[] { '=' })[1];
+            int top_length = int.Parse(line[10].Split(new char[] { '=' })[1]);
+            int top_score = int.Parse(line[9].Split(new char[] { '=' })[1]);
+            string top_name = line[11].Split(new char[] { '=' })[1];
+            var familySection = new Family
             {
-                FamilySectionLineId = familySectionLineId,
-                Sra = sra,
-                Family = family,
-                Score = score,
-                PctId = pctId,
-                Aln = aln,
-                Glb = glb,
-                PanLen = panLen,
-                Cvg = cvg,
-                Top = top,
-                TopAln = topAln,
-                TopLen = topLen,
-                TopName = topName,
+                family_line = family_line,
+                sra_id = sra,
+                family_name = family_name,
+                score = score,
+                percent_identity = percent_identity,
+                coverage_bins = coverage_bins,
+                n_reads = n_reads,
+                n_global_reads = n_global_reads,
+                length = length,
+                depth = depth,
+                top_genbank_id = top_genbank_id,
+                top_name = top_name,
+                top_score = top_score,
+                top_length = top_length,
             };
             return familySection;
         }
@@ -305,8 +320,8 @@ namespace ParserNs
             foreach (string line in unparsedFile.FamilyLinesFromFile)
             {
                 temp = line.Split(new char[] { ';' });
-                var familySection = ParseFamilySectionLine(temp, i, unparsedFile.Sra);
-                partiallyParsedFileC.FamilySections.Add(familySection);
+                var family = ParseFamilySectionLine(temp, i, unparsedFile.Sra);
+                partiallyParsedFileC.family.Add(family);
                 i++;
             }
             var partiallyParsedFileCF = partiallyParsedFileC;
