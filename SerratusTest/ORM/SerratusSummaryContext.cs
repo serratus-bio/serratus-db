@@ -9,10 +9,9 @@ namespace SerratusTest.ORM
 {
     public class SerratusSummaryContext : DbContext
     {
-        public DbSet<Run> Runs { get; set; }
-        public DbSet<FamilySection> FamilySections{ get; set; }
-        public DbSet<AccessionSection> AccessionSections { get; set; }
-        public DbSet<FastaSection> FastaSections { get; set; }
+        public DbSet<Run> run { get; set; }
+        public DbSet<Family> family { get; set; }
+        public DbSet<Sequence> sequence { get; set; }
         public object Configuration { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder.UseNpgsql(Helper.GetRDSConnectionString());
