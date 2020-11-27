@@ -29,7 +29,7 @@ namespace SerratusApi
         {
             services.AddControllers();
             services.AddDbContext<SerratusSummaryContext>();
-            services.AddScoped<ISerratusSummaryService, SerratusSummaryService>();
+            //services.AddScoped<ISerratusSummaryService, SerratusSummaryService>();
             //var connectionString = Configuration.GetConnectionString("DartDatabase");
             //services.AddDbContext<DartContext>(options =>
             //    options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());

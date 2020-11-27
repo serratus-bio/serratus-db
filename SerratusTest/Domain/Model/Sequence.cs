@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,11 +9,10 @@ namespace SerratusTest.Domain.Model
 {
     public class Sequence
     {
+        [Key]
         public int sequence_id { get; set; }
         public int sequence_line { get; set; }
-        public int run_id { get; set; }
-        public int sra_id { get; set; }
-        public int family_id { get; set; }
+        public string sra_id { get; set; }
         public string genbank_id { get; set; }
         public string genbank_name { get; set; }
         public string family_name { get; set; }
