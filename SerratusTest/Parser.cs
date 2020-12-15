@@ -29,8 +29,8 @@ namespace ParserNs
             _accessKey = accessKey;
             _secretKey = secretKey;
         }
-        //static readonly string textfile = @"/home/ec2-user/Summary10.txt";
-        static readonly string textfile = @"Summary.txt";
+        static readonly string textfile = @"/home/ec2-user/Summary2.txt";
+        //static readonly string textfile = @"C:\Users\Dan\Desktop\PROJECTS\serratus\summaryfiles\Summary1.txt";
 
         public List<string> ReadAwsFile()
         {
@@ -103,7 +103,7 @@ namespace ParserNs
                     Console.WriteLine(e);
                     throw;
                 }
-                if (tasks.Count == 100)
+                if (tasks.Count % 100 == 0)
                 {
                     await Task.WhenAll(tasks);
                     Console.WriteLine("100 Tasks done!");
