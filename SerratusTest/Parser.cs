@@ -29,7 +29,7 @@ namespace ParserNs
             _accessKey = accessKey;
             _secretKey = secretKey;
         }
-        static readonly string textfile = @"/home/ec2-user/Summary2.txt";
+        static readonly string textfile = @"/home/ec2-user/Summary3.txt";
         //static readonly string textfile = @"C:\Users\Dan\Desktop\PROJECTS\serratus\summaryfiles\Summary1.txt";
 
         public List<string> ReadAwsFile()
